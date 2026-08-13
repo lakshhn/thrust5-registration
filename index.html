@@ -283,16 +283,7 @@
             const targetUrl = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
             
             try {
-              fetch(targetUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: payloadStr
-              });
-            } catch(e) {}
-
-            try {
-              const iframeName = 'thrust5_iframe_idx';
+              const iframeName = 'thrust5_iframe_idx_single';
               let iframe = document.getElementById(iframeName);
               if (!iframe) {
                 iframe = document.createElement('iframe');
@@ -312,36 +303,43 @@
               formEl.appendChild(inputEl);
               document.body.appendChild(formEl);
               formEl.submit();
-              setTimeout(() => { if (formEl.parentNode) formEl.parentNode.removeChild(formEl); }, 1500);
+              setTimeout(() => { if (formEl.parentNode) formEl.parentNode.removeChild(formEl); }, 1200);
             } catch(e) {}
 
             setSubmittedData(data);
           }
         };
 
+        const handleDone = () => {
+          setSubmittedData(null);
+          setForm({ teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '', m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: '' });
+          setFile(null); setFilePreview(null); setFileBase64('');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
         if (submittedData) return (
           <section id="register" className="py-20 px-4 bg-[#080C11] border-t border-[#1E3A5F]">
-            <div className="max-w-xl mx-auto cyber-card p-8 text-center space-y-6 relative overflow-hidden">
+            <div className="max-w-xl mx-auto cyber-card p-8 text-center space-y-5 relative overflow-hidden">
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1E6FBA] to-[#29ABE2] p-0.5 mx-auto shadow-lg shadow-[#29ABE2]/20">
                 <div className="w-full h-full bg-[#0D1117] rounded-[14px] flex items-center justify-center text-4xl">🚀</div>
               </div>
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold uppercase tracking-wider mb-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                  Registration Confirmed & Verified
+                  Registration Confirmed
                 </div>
-                <h3 className="font-heading font-extrabold text-3xl text-white tracking-tight">Ready for <span className="text-[#29ABE2]">Blast Off!</span></h3>
-                <p className="text-xs text-[#94A3B8] mt-1">Your team registration and payment proof have been officially logged in the Aero Fabrication Club competition sheet.</p>
+                <h3 className="font-heading font-extrabold text-3xl text-white tracking-tight">Registration <span className="text-[#29ABE2]">Successful!</span></h3>
+                <p className="text-xs text-[#94A3B8] mt-1">Your team registration and payment proof have been officially logged in the competition sheet.</p>
               </div>
 
-              <div className="bg-[#0A0F16] border-2 border-[#1E3A5F] rounded-xl p-5 text-left space-y-3 font-sans">
+              <div className="bg-[#0A0F16] border border-[#1E3A5F] rounded-xl p-5 text-left space-y-3 font-sans">
                 <div className="flex justify-between items-center border-b border-[#1E3A5F] pb-3">
                   <div>
-                    <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Official Entry Ticket</div>
+                    <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Registered Team</div>
                     <div className="font-heading font-bold text-lg text-white">{submittedData.teamName}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Pass ID</div>
+                    <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Reg ID</div>
                     <div className="font-mono font-bold text-sm text-[#29ABE2] bg-[#29ABE2]/10 px-2 py-0.5 rounded border border-[#29ABE2]/30">{submittedData.regId}</div>
                   </div>
                 </div>
@@ -362,15 +360,23 @@
                   </div>
                   <div>
                     <span className="text-[#64748B] block text-[10px] uppercase font-mono">Payment Status</span>
-                    <span className="text-emerald-400 font-bold">✓ ₹120 Verified</span>
+                    <span className="text-emerald-400 font-bold">✓ ₹120 Submitted</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button onClick={() => window.print()} className="flex-1 py-3 px-4 rounded-lg bg-[#1E3A5F]/40 border border-[#29ABE2]/40 hover:bg-[#1E3A5F] text-white font-heading font-bold text-xs uppercase tracking-wider">📥 Save / Print Ticket</button>
-                <button onClick={() => setSubmittedData(null)} className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-[#1E6FBA] to-[#29ABE2] text-white font-heading font-extrabold text-xs uppercase tracking-wider">🚀 Register Another Team</button>
+              <div className="bg-[#1E6FBA]/10 border border-[#29ABE2]/30 rounded-xl p-4 text-left space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#29ABE2] uppercase tracking-wider">
+                  <span>📢</span> Important Notice for Participants:
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed">
+                  Stay tuned on the official <strong>Thrust 5.0 WhatsApp Group</strong> and website for the official rulebook, launch schedule, domain briefing, and event guidelines!
+                </p>
               </div>
+
+              <button onClick={handleDone} className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#1E6FBA] to-[#29ABE2] hover:opacity-95 text-white font-heading font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[#29ABE2]/20">
+                ✓ Registration Done
+              </button>
             </div>
           </section>
         );

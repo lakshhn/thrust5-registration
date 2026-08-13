@@ -25,7 +25,6 @@ export default function RegistrationForm() {
   const [scriptUrl, setScriptUrl] = useState(
     localStorage.getItem('thrust5_script_url') || ''
   );
-  const [showConfig, setShowConfig] = useState(false);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -155,7 +154,7 @@ export default function RegistrationForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm() || isSubmitting) return;
 
     setIsSubmitting(true);
 
@@ -174,20 +173,8 @@ export default function RegistrationForm() {
       if (targetUrl) {
         const payloadString = JSON.stringify(payload);
 
-        // 1. Primary Fetch POST
-        try {
-          fetch(targetUrl, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: payloadString
-          });
-        } catch (fetchErr) {
-          console.warn('Fetch submission notice:', fetchErr);
-        }
-
-        // 2. Dual-Transmission Hidden Form POST to Hidden Iframe
-        const iframeName = 'thrust5_submit_iframe';
+        // SINGLE Transmission via Hidden Iframe Form POST to prevent duplicate rows
+        const iframeName = 'thrust5_submit_iframe_single';
         let iframe = document.getElementById(iframeName);
         if (!iframe) {
           iframe = document.createElement('iframe');
@@ -213,7 +200,7 @@ export default function RegistrationForm() {
 
         setTimeout(() => {
           if (form.parentNode) form.parentNode.removeChild(form);
-        }, 1500);
+        }, 1200);
       }
 
       // Save locally as backup
@@ -232,7 +219,17 @@ export default function RegistrationForm() {
     }
   };
 
-  // PREMIUM REGISTRATION SUCCESS BADGE / PASS
+  const handleRegistrationDone = () => {
+    setSubmittedData(null);
+    setFormData({
+      teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',
+      m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: ''
+    });
+    removeFile();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // SUCCESS SCREEN WITH SINGLE "REGISTRATION DONE" BUTTON & WHATSAPP / ANNOUNCEMENT MESSAGE
   if (submittedData) {
     return (
       <section id="register" className="py-16 sm:py-24 px-4 sm:px-6 bg-[#080C11] border-t border-[#1E3A5F]">
@@ -243,7 +240,7 @@ export default function RegistrationForm() {
             transition={{ duration: 0.5, type: 'spring', damping: 20 }}
             className="cyber-card p-6 sm:p-8 text-center relative overflow-hidden"
           >
-            {/* Ambient Background Glow */}
+            {/* Background Glow */}
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#29ABE2]/20 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-[#1E6FBA]/20 rounded-full blur-3xl pointer-events-none" />
 
@@ -252,7 +249,7 @@ export default function RegistrationForm() {
               initial={{ scale: 0, rotate: -45 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: 'spring' }}
-              className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1E6FBA] to-[#29ABE2] p-0.5 mx-auto mb-5 shadow-lg shadow-[#29ABE2]/20"
+              className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1E6FBA] to-[#29ABE2] p-0.5 mx-auto mb-4 shadow-lg shadow-[#29ABE2]/20"
             >
               <div className="w-full h-full bg-[#0D1117] rounded-[14px] flex items-center justify-center text-4xl">
                 🚀
@@ -262,25 +259,25 @@ export default function RegistrationForm() {
             {/* Status Pill */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold uppercase tracking-wider mb-3">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              Registration Confirmed & Verified
+              Registration Confirmed
             </div>
 
             <h3 className="font-heading font-extrabold text-2xl sm:text-4xl text-white tracking-tight mb-2">
-              Ready for <span className="text-[#29ABE2]">Blast Off!</span>
+              Registration <span className="text-[#29ABE2]">Successful!</span>
             </h3>
-            <p className="text-xs sm:text-sm text-[#94A3B8] max-w-md mx-auto mb-6">
-              Congratulations! Your team registration and payment proof have been officially logged in the Aero Fabrication Club competition sheet.
+            <p className="text-xs sm:text-sm text-[#94A3B8] max-w-md mx-auto mb-5">
+              Your team data and payment proof have been officially logged in the competition spreadsheet.
             </p>
 
-            {/* High-Impact Official Competition Pass */}
-            <div className="bg-[#0A0F16] border-2 border-[#1E3A5F] rounded-xl p-5 text-left relative overflow-hidden space-y-3 mb-6 shadow-inner">
+            {/* Ticket Card */}
+            <div className="bg-[#0A0F16] border border-[#1E3A5F] rounded-xl p-5 text-left space-y-3 mb-5 shadow-inner">
               <div className="flex justify-between items-center border-b border-[#1E3A5F] pb-3">
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Official Entry Ticket</div>
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Registered Team</div>
                   <div className="font-heading font-bold text-lg text-white">{submittedData.teamName}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Pass ID</div>
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Reg ID</div>
                   <div className="font-mono font-bold text-sm text-[#29ABE2] bg-[#29ABE2]/10 px-2 py-0.5 rounded border border-[#29ABE2]/30">
                     {regId}
                   </div>
@@ -305,36 +302,31 @@ export default function RegistrationForm() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#64748B] block text-[10px] uppercase font-mono">Payment Status</span>
+                  <span className="text-[#64748B] block text-[10px] uppercase font-mono">Payment Proof</span>
                   <span className="text-emerald-400 font-bold flex items-center gap-1">
-                    ✓ ₹120 Verified
+                    ✓ ₹120 Submitted
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => window.print()}
-                className="flex-1 py-3 px-4 rounded-lg bg-[#1E3A5F]/40 border border-[#29ABE2]/40 hover:bg-[#1E3A5F] text-white font-heading font-bold text-xs uppercase tracking-wider transition-all"
-              >
-                📥 Save / Print Ticket
-              </button>
-              <button
-                onClick={() => {
-                  setSubmittedData(null);
-                  setFormData({
-                    teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',
-                    m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: ''
-                  });
-                  removeFile();
-                }}
-                className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-[#1E6FBA] to-[#29ABE2] hover:opacity-95 text-white font-heading font-extrabold text-xs uppercase tracking-wider transition-all shadow-md"
-              >
-                🚀 Register Another Team
-              </button>
+            {/* Official Announcement Box */}
+            <div className="bg-[#1E6FBA]/10 border border-[#29ABE2]/30 rounded-xl p-4 text-left mb-6 space-y-1.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#29ABE2] uppercase tracking-wider">
+                <span>📢</span> Important Notice for Participants:
+              </div>
+              <p className="text-xs text-slate-200 leading-relaxed">
+                Stay tuned on the official <strong>Thrust 5.0 WhatsApp Group</strong> and website for the official rulebook, launch schedule, domain briefing, and event guidelines!
+              </p>
             </div>
+
+            {/* Single Registration Done Button */}
+            <button
+              onClick={handleRegistrationDone}
+              className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#1E6FBA] to-[#29ABE2] hover:opacity-95 text-white font-heading font-extrabold text-sm uppercase tracking-wider transition-all shadow-lg shadow-[#29ABE2]/20"
+            >
+              ✓ Registration Done
+            </button>
           </motion.div>
         </div>
       </section>

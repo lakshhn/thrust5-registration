@@ -1,5 +1,6 @@
 /**
- * Thrust 5.0 Registration — Updated Google Apps Script Backend (12 Columns)
+ * Thrust 5.0 Registration — Fail-Safe Google Apps Script Backend (12 Columns)
+ * With Case-Insensitive Team Name Duplicate Protection
  * Linked directly to Spreadsheet ID: 1U_W0ghyQQN_LT6BUu9mInyWEHy6og-VqcP85lzwXlgY
  */
 
@@ -61,8 +62,35 @@ function doPost(e) {
       data = e.parameter;
     }
 
+    var teamName = (data.teamName || '').trim();
+    if (!teamName) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ result: 'error', error: 'Team name is required' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // --- DUPLICATE CHECK (Case-Insensitive for Team Name) ---
+    var lastRow = sheet.getLastRow();
+    if (lastRow > 1) {
+      var existingTeams = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+      var normalizedNewTeam = teamName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      
+      for (var i = 0; i < existingTeams.length; i++) {
+        var existingName = (existingTeams[i][0] || '').toString().trim();
+        var normalizedExisting = existingName.toLowerCase().replace(/[^a-z0-9]/g, '');
+        
+        if (normalizedExisting && normalizedExisting === normalizedNewTeam) {
+          return ContentService
+            .createTextOutput(JSON.stringify({ 
+              result: 'duplicate', 
+              error: 'Team Name "' + teamName + '" is already registered! Please choose a unique team name.' 
+            }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+    }
+
     var timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-    var teamName = data.teamName || 'N/A';
     var teamLeader = data.teamLeader || 'N/A';
     var leaderRoll = data.leaderRoll || 'N/A';
     var leaderPhone = "'" + (data.leaderPhone || '');
@@ -73,7 +101,7 @@ function doPost(e) {
     var m3Name = data.m3Name || '';
     var m3Roll = data.m3Roll || '';
 
-    // 1. APPEND 12-COLUMN ROW IMMEDIATELY TO SHEET
+    // 1. APPEND ROW ONCE (GUARANTEED WRITE)
     sheet.appendRow([
       timestamp,
       teamName,
@@ -89,7 +117,7 @@ function doPost(e) {
       "Processing receipt..."
     ]);
 
-    var lastRow = sheet.getLastRow();
+    var newRow = sheet.getLastRow();
     var receiptUrl = "No Receipt File Attached";
 
     // 2. PROCESS PAYMENT RECEIPT FILE INTO GOOGLE DRIVE
@@ -115,17 +143,17 @@ function doPost(e) {
         file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
         receiptUrl = file.getUrl();
       } catch (driveErr) {
-        receiptUrl = "Receipt received (Base64 attached). Drive note: " + driveErr.toString();
+        receiptUrl = "Receipt attached. Drive note: " + driveErr.toString();
       }
     } else if (paymentReceipt) {
       receiptUrl = paymentReceipt;
     }
 
-    // Update Receipt Column (Col 12)
-    sheet.getRange(lastRow, 12).setValue(receiptUrl);
+    // Update Receipt Cell (Col 12)
+    sheet.getRange(newRow, 12).setValue(receiptUrl);
 
     return ContentService
-      .createTextOutput(JSON.stringify({ result: 'success', row: lastRow, receiptUrl: receiptUrl }))
+      .createTextOutput(JSON.stringify({ result: 'success', row: newRow, receiptUrl: receiptUrl }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
