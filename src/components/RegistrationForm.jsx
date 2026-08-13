@@ -149,11 +149,12 @@ export default function RegistrationForm() {
     const targetUrl = scriptUrl || DEFAULT_SCRIPT_URL;
 
     try {
-      if (targetUrl && targetUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+      if (targetUrl) {
+        // Send as text/plain to bypass browser CORS preflight OPTIONS check for Google Apps Script
         await fetch(targetUrl, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
       }
@@ -161,13 +162,12 @@ export default function RegistrationForm() {
       // Save locally as backup
       const existing = JSON.parse(localStorage.getItem('thrust5_registrations') || '[]');
       existing.push(payload);
-      localStorage.getItem('thrust5_registrations', JSON.stringify(existing));
+      localStorage.setItem('thrust5_registrations', JSON.stringify(existing));
 
       setRegId(generatedRegId);
       setSubmittedData(payload);
     } catch (err) {
       console.error('Submission error:', err);
-      // Still allow success view with local saving fallback
       setRegId(generatedRegId);
       setSubmittedData(payload);
     } finally {
