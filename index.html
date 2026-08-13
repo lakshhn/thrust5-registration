@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Thrust 5.0 — Water Rocket Competition | AFC IIITDMJ</title>
+  <title>Thrust 5.0 — Water Rocket Competition | Aero Fabrication Club IIITDMJ</title>
   <meta name="description" content="Register your team for Thrust 5.0 — the flagship water rocket competition by Aero Fabrication Club, IIITDMJ. Exclusively for first-year students." />
   
   <!-- Google Fonts -->
@@ -118,16 +118,21 @@
           return () => window.removeEventListener('scroll', h);
         }, []);
         return (
-          <header className={`fixed top-0 left-0 right-0 z-50 transition-all ${scrolled ? 'bg-[#0D1117]/95 border-b border-[#1E3A5F] py-3' : 'bg-transparent py-4'}`}>
+          <header className={`fixed top-0 left-0 right-0 z-50 transition-all ${scrolled ? 'bg-[#0D1117]/95 border-b border-[#1E3A5F] py-2.5 shadow-lg' : 'bg-transparent py-4'}`}>
             <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
-              <a href="#" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded bg-[#1E6FBA]/20 border border-[#29ABE2] flex items-center justify-center font-bold text-[#29ABE2]">🚀</div>
-                <div className="font-heading font-extrabold text-base tracking-wider text-white">THRUST <span className="text-[#29ABE2]">5.0</span></div>
+              <a href="#" className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg overflow-hidden border-2 border-[#29ABE2] bg-[#080C11]">
+                  <img src="/afc-user-logo.jpg" alt="AFC Logo" className="w-full h-full object-cover" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
+                </div>
+                <div>
+                  <div className="font-heading font-extrabold text-base tracking-wider text-white">THRUST <span className="text-[#29ABE2]">5.0</span></div>
+                  <div className="text-[10px] font-mono text-[#29ABE2] uppercase font-bold tracking-widest">AFC · IIITDMJ</div>
+                </div>
               </a>
-              <div className="hidden md:flex items-center gap-6 text-sm text-[#94A3B8]">
+              <div className="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
                 <a href="#details" className="hover:text-[#29ABE2]">Overview</a>
                 <a href="#rules" className="hover:text-[#29ABE2]">Rules</a>
-                <a href="#register" className="btn-launch px-4 py-2 text-xs">Register Team</a>
+                <a href="#register" className="btn-launch px-5 py-2 text-xs">Register Team</a>
               </div>
               <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-[#29ABE2]">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -139,7 +144,7 @@
               <div className="md:hidden bg-[#0D1117] border-b border-[#1E3A5F] px-4 py-4 space-y-3">
                 <a href="#details" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Overview</a>
                 <a href="#rules" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Rules</a>
-                <a href="#register" onClick={() => setOpen(false)} className="btn-launch w-full text-center py-2.5 text-xs">Register Team →</a>
+                <a href="#register" onClick={() => setOpen(false)} className="btn-launch w-full text-center py-2.5 text-xs">Register Team</a>
               </div>
             )}
           </header>
@@ -150,12 +155,18 @@
         return (
           <section className="relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 px-4 text-center bg-[#0D1117]">
             <div className="max-w-3xl mx-auto">
-              <div className="inline-block px-3.5 py-1 rounded-full bg-[#111827] border border-[#1E3A5F] text-[#29ABE2] font-heading font-semibold text-xs uppercase tracking-widest mb-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111827] border border-[#29ABE2]/40 text-[#29ABE2] font-heading font-semibold text-xs uppercase tracking-widest mb-6">
+                <img src="/afc-user-logo.jpg" className="w-4 h-4 rounded-full border border-[#29ABE2]" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
                 Aero Fabrication Club · IIITDMJ
               </div>
-              <h1 className="font-heading font-extrabold text-5xl sm:text-7xl md:text-8xl text-white tracking-tight leading-none mb-4">
-                THRUST <span className="text-[#29ABE2]">5.0</span>
-              </h1>
+
+              <div className="mb-4">
+                <img src="/thrust5-title.png" alt="THRUST 5.0" className="w-full max-w-md mx-auto rounded-2xl border border-[#29ABE2]/30 shadow-xl" onError={(e)=>{e.target.style.display='none';}} />
+                <h1 className="font-heading font-extrabold text-5xl sm:text-7xl md:text-8xl text-white tracking-tight leading-none">
+                  THRUST <span className="text-[#29ABE2]">5.0</span>
+                </h1>
+              </div>
+
               <p className="text-base sm:text-xl text-[#94A3B8] max-w-xl mx-auto mb-2">
                 The Ultimate Water Rocket Challenge
               </p>
@@ -163,7 +174,7 @@
                 Exclusively for First-Year Students
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center items-stretch max-w-md mx-auto mb-12">
-                <a href="#register" className="btn-launch text-sm py-3.5 px-8 font-bold">Register Your Team →</a>
+                <a href="#register" className="btn-launch text-sm py-3.5 px-8 font-bold">Register Your Team</a>
                 <a href="#details" className="px-6 py-3.5 rounded-lg border border-[#1E3A5F] text-[#94A3B8] font-heading font-semibold text-xs uppercase tracking-wider">Event Details</a>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
@@ -191,10 +202,10 @@
 
       function EventDetails() {
         const cards = [
-          { icon: '📅', label: 'Date', val: 'TBA 2025' },
-          { icon: '🕐', label: 'Time', val: '09:00 AM' },
-          { icon: '📍', label: 'Venue', val: 'IIITDMJ Grounds' },
-          { icon: '💰', label: 'Entry Fee', val: '₹120 / Team' },
+          { label: 'Date', val: 'TBA 2025' },
+          { label: 'Time', val: '09:00 AM' },
+          { label: 'Venue', val: 'IIITDMJ Grounds' },
+          { label: 'Entry Fee', val: '₹120 / Team' },
         ];
         return (
           <section id="details" className="py-16 px-4 bg-[#0D1117] border-t border-[#1E3A5F]">
@@ -211,14 +222,13 @@
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
                 {cards.map(c => (
                   <div key={c.label} className="cyber-card p-4">
-                    <div className="text-2xl mb-2">{c.icon}</div>
                     <div className="text-[10px] text-[#29ABE2] font-mono font-bold uppercase">{c.label}</div>
-                    <div className="font-heading font-bold text-lg text-white">{c.val}</div>
+                    <div className="font-heading font-bold text-lg text-white mt-1">{c.val}</div>
                   </div>
                 ))}
               </div>
               <div id="rules" className="cyber-card p-6 border-l-4 border-l-[#29ABE2]">
-                <h3 className="font-heading font-bold text-base text-white mb-3 flex items-center gap-2">🚀 Competition Rules</h3>
+                <h3 className="font-heading font-bold text-base text-white mb-3 flex items-center gap-2">Competition Format & Guidelines</h3>
                 <ul className="space-y-2 text-xs sm:text-sm text-[#94A3B8]">
                   <li>• Exclusively for 1st-year undergraduate students of IIITDMJ.</li>
                   <li>• Team size: 2 to 4 members with a designated Team Leader.</li>
@@ -231,17 +241,20 @@
         );
       }
 
-      function RegistrationForm() {
+      function RegistrationForm({ onSubmittedStateChange }) {
         const [form, setForm] = useState({
           teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',
-          m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: '',
-          experience: '', motivation: ''
+          m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: ''
         });
         const [file, setFile] = useState(null);
         const [filePreview, setFilePreview] = useState(null);
         const [fileBase64, setFileBase64] = useState('');
         const [errors, setErrors] = useState({});
         const [submittedData, setSubmittedData] = useState(null);
+
+        useEffect(() => {
+          if (onSubmittedStateChange) onSubmittedStateChange(!!submittedData);
+        }, [submittedData]);
 
         const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
         
@@ -250,12 +263,12 @@
           setFile(f);
           if (f.type.startsWith('image/')) {
             const r = new FileReader();
-            r.onloadend = () => { setFilePreview(r.result); setFileBase64(r.result); };
+            r.onloadend = () => { setFilePreview(r.result); setFileBase64(r.result.split(',')[1]); };
             r.readAsDataURL(f);
           } else {
             setFilePreview(null);
             const r = new FileReader();
-            r.onloadend = () => setFileBase64(r.result);
+            r.onloadend = () => setFileBase64(r.result.split(',')[1]);
             r.readAsDataURL(f);
           }
         };
@@ -278,7 +291,7 @@
         const handleSubmit = async (ev) => {
           ev.preventDefault();
           if (validate()) {
-            const data = { regId: 'THRUST5-' + Math.floor(100000 + Math.random() * 900000), timestamp: new Date().toISOString(), ...form, paymentReceipt: fileBase64, fileName: file.name };
+            const data = { regId: 'THRUST5-' + Math.floor(100000 + Math.random() * 900000), timestamp: new Date().toISOString(), ...form, fileName: file.name, fileData: fileBase64 };
             const payloadStr = JSON.stringify(data);
             const targetUrl = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
             
@@ -320,8 +333,8 @@
         if (submittedData) return (
           <section id="register" className="py-20 px-4 bg-[#080C11] border-t border-[#1E3A5F]">
             <div className="max-w-xl mx-auto cyber-card p-8 text-center space-y-5 relative overflow-hidden">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1E6FBA] to-[#29ABE2] p-0.5 mx-auto shadow-lg shadow-[#29ABE2]/20">
-                <div className="w-full h-full bg-[#0D1117] rounded-[14px] flex items-center justify-center text-4xl">🚀</div>
+              <div className="w-20 h-20 rounded-2xl border-2 border-[#29ABE2] overflow-hidden mx-auto shadow-lg shadow-[#29ABE2]/20 bg-[#080C11]">
+                <img src="/afc-user-logo.jpg" className="w-full h-full object-cover" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
               </div>
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold uppercase tracking-wider mb-2">
@@ -360,14 +373,14 @@
                   </div>
                   <div>
                     <span className="text-[#64748B] block text-[10px] uppercase font-mono">Payment Status</span>
-                    <span className="text-emerald-400 font-bold">✓ ₹120 Submitted</span>
+                    <span className="text-emerald-400 font-bold">₹120 Submitted</span>
                   </div>
                 </div>
               </div>
 
               <div className="bg-[#1E6FBA]/10 border border-[#29ABE2]/30 rounded-xl p-4 text-left space-y-1.5">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#29ABE2] uppercase tracking-wider">
-                  <span>📢</span> Important Notice for Participants:
+                  Important Notice for Participants:
                 </div>
                 <p className="text-xs text-slate-200 leading-relaxed">
                   Stay tuned on the official <strong>Thrust 5.0 WhatsApp Group</strong> and website for the official rulebook, launch schedule, domain briefing, and event guidelines!
@@ -375,7 +388,7 @@
               </div>
 
               <button onClick={handleDone} className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#1E6FBA] to-[#29ABE2] hover:opacity-95 text-white font-heading font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[#29ABE2]/20">
-                ✓ Registration Done
+                Registration Done
               </button>
             </div>
           </section>
@@ -445,11 +458,10 @@
                       <div>
                         {filePreview && <img src={filePreview} className="w-24 h-24 object-cover rounded mx-auto mb-2 border border-[#1E3A5F]" />}
                         <div className="font-bold text-xs text-white truncate">{file.name}</div>
-                        <div className="text-[10px] text-green-400 font-semibold mt-1">✓ File Attached (Click to change)</div>
+                        <div className="text-[10px] text-green-400 font-semibold mt-1">Receipt Attached (Click to change)</div>
                       </div>
                     ) : (
                       <div>
-                        <div className="text-2xl mb-1">📤</div>
                         <div className="font-bold text-xs text-white">Click or Drag Payment Screenshot (PNG/JPG/PDF)</div>
                         <div className="text-[10px] text-[#64748B]">Max 12MB</div>
                       </div>
@@ -458,22 +470,36 @@
                   {errors.file && <p className="text-red-400 text-xs mt-1">{errors.file}</p>}
                 </div>
 
-                <button type="submit" className="btn-launch w-full py-3.5 text-sm font-extrabold">Complete Registration →</button>
+                <button type="submit" className="btn-launch w-full py-3.5 text-sm font-extrabold">Complete Registration</button>
               </form>
             </div>
           </section>
         );
       }
 
-
-      function FloatingMobileCTA() {
+      function FloatingMobileCTA({ isSubmitted }) {
         const [vis, setVis] = useState(false);
         useEffect(() => {
-          const h = () => setVis(window.scrollY > 250);
+          const h = () => {
+            if (isSubmitted) {
+              setVis(false);
+              return;
+            }
+            const scrolled = window.scrollY > 250;
+            const regEl = document.getElementById('register');
+            let isNearRegister = false;
+            if (regEl) {
+              const rect = regEl.getBoundingClientRect();
+              isNearRegister = rect.top <= window.innerHeight - 100;
+            }
+            setVis(scrolled && !isNearRegister);
+          };
           window.addEventListener('scroll', h);
+          h();
           return () => window.removeEventListener('scroll', h);
-        }, []);
-        if (!vis) return null;
+        }, [isSubmitted]);
+
+        if (isSubmitted || !vis) return null;
         return (
           <div className="md:hidden fixed bottom-3 left-3 right-3 z-40">
             <div className="bg-[#0D1117]/95 border border-[#1E3A5F] p-3 rounded-xl shadow-2xl flex items-center justify-between gap-3">
@@ -481,7 +507,7 @@
                 <div className="font-heading font-extrabold text-xs text-white">THRUST <span className="text-[#29ABE2]">5.0</span></div>
                 <div className="text-[10px] text-[#29ABE2] font-semibold">₹120 / Team</div>
               </div>
-              <a href="#register" className="btn-launch px-4 py-2 text-xs font-bold">Register Now</a>
+              <a href="#register" className="btn-launch px-4 py-2 text-xs font-bold">Register Team</a>
             </div>
           </div>
         );
@@ -491,25 +517,29 @@
         return (
           <footer className="bg-[#080C11] border-t border-[#1E3A5F] py-8 px-4 text-center sm:text-left">
             <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-[#64748B]">
-              <div>
-                <div className="font-heading font-extrabold text-sm text-white mb-1">THRUST <span className="text-[#29ABE2]">5.0</span></div>
-                <div>Aero Fabrication Club · IIITDMJ</div>
+              <div className="flex items-center gap-3">
+                <img src="/afc-user-logo.jpg" className="w-8 h-8 rounded-lg border border-[#29ABE2]" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
+                <div>
+                  <div className="font-heading font-extrabold text-sm text-white mb-0.5">THRUST <span className="text-[#29ABE2]">5.0</span></div>
+                  <div className="text-[#29ABE2] font-semibold">Aero Fabrication Club, IIITDM Jabalpur</div>
+                </div>
               </div>
-              <div>© 2025 Aero Fabrication Club, IIITDMJ</div>
+              <div className="text-slate-300 font-medium">© 2025 Aero Fabrication Club, IIITDM Jabalpur. All rights reserved.</div>
             </div>
           </footer>
         );
       }
 
       function App() {
+        const [isSubmitted, setIsSubmitted] = useState(false);
         return (
           <div>
             <Navbar />
             <Hero />
             <EventDetails />
-            <RegistrationForm />
+            <RegistrationForm onSubmittedStateChange={setIsSubmitted} />
             <Footer />
-            <FloatingMobileCTA />
+            <FloatingMobileCTA isSubmitted={isSubmitted} />
           </div>
         );
       }

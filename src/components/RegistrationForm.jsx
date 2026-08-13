@@ -1,9 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
-
-export default function RegistrationForm() {
+export default function RegistrationForm({ onSubmittedStateChange }) {
   const [formData, setFormData] = useState({
     teamName: '',
     teamLeader: '',
@@ -18,40 +16,35 @@ export default function RegistrationForm() {
   });
 
   const [receiptFile, setReceiptFile] = useState(null);
-  const [receiptPreview, setReceiptPreview] = useState(null);
   const [receiptBase64, setReceiptBase64] = useState('');
+  const [receiptPreview, setReceiptPreview] = useState(null);
   const [dragActive, setDragActive] = useState(false);
 
-  const [scriptUrl, setScriptUrl] = useState(
-    localStorage.getItem('thrust5_script_url') || ''
-  );
-
-  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedData, setSubmittedData] = useState(null);
   const [regId, setRegId] = useState('');
+  const [errors, setErrors] = useState({});
 
   const fileInputRef = useRef(null);
 
-  const updateField = (key, value) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-    if (errors[key]) {
-      setErrors((prev) => ({ ...prev, [key]: null }));
+  useEffect(() => {
+    if (onSubmittedStateChange) {
+      onSubmittedStateChange(!!submittedData);
+    }
+  }, [submittedData, onSubmittedStateChange]);
+
+  const updateField = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: null }));
     }
   };
 
-  // Handle File Selection with Auto-Compression
   const handleFileChange = (file) => {
     if (!file) return;
 
     if (file.size > 12 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, receipt: 'File size must be under 12MB' }));
-      return;
-    }
-
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
-    if (!validTypes.includes(file.type)) {
-      setErrors((prev) => ({ ...prev, receipt: 'Please upload a PNG, JPG, WEBP image or PDF' }));
+      setErrors((prev) => ({ ...prev, receipt: 'File size exceeds 12MB limit.' }));
       return;
     }
 
@@ -60,47 +53,25 @@ export default function RegistrationForm() {
 
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 1000;
-          const MAX_HEIGHT = 1000;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = Math.round((height * MAX_WIDTH) / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = Math.round((width * MAX_HEIGHT) / height);
-              height = MAX_HEIGHT;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-          setReceiptPreview(compressedBase64);
-          setReceiptBase64(compressedBase64);
-        };
-        img.src = event.target.result;
-      };
+      reader.onload = (e) => setReceiptPreview(e.target.result);
       reader.readAsDataURL(file);
     } else {
       setReceiptPreview(null);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setReceiptBase64(reader.result);
-      };
-      reader.readAsDataURL(file);
     }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64Str = e.target.result.split(',')[1] || '';
+      setReceiptBase64(base64Str);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeFile = () => {
+    setReceiptFile(null);
+    setReceiptBase64('');
+    setReceiptPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleDrag = (e) => {
@@ -122,59 +93,63 @@ export default function RegistrationForm() {
     }
   };
 
-  const removeFile = () => {
-    setReceiptFile(null);
-    setReceiptPreview(null);
-    setReceiptBase64('');
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.teamName.trim()) newErrors.teamName = 'Team Name is required';
-    if (!formData.teamLeader.trim()) newErrors.teamLeader = 'Team Leader Name is required';
-    if (!formData.leaderRoll.trim()) newErrors.leaderRoll = 'Team Leader Roll Number is required';
+  const validate = () => {
+    const errs = {};
+    if (!formData.teamName.trim()) errs.teamName = 'Team Name is required.';
+    if (!formData.teamLeader.trim()) errs.teamLeader = 'Team Leader Name is required.';
+    if (!formData.leaderRoll.trim()) errs.leaderRoll = 'Leader Roll Number is required.';
 
     if (!formData.leaderPhone.trim()) {
-      newErrors.leaderPhone = 'Mobile Number is required';
-    } else if (!/^\d{10}$/.test(formData.leaderPhone.replace(/\s/g, ''))) {
-      newErrors.leaderPhone = 'Enter a valid 10-digit mobile number';
+      errs.leaderPhone = 'Mobile number is required.';
+    } else if (!/^[6-9]\d{9}$/.test(formData.leaderPhone.trim())) {
+      errs.leaderPhone = 'Enter a valid 10-digit mobile number.';
     }
 
-    if (!formData.m1Name.trim()) newErrors.m1Name = 'Member 1 Name is required';
-    if (!formData.m1Roll.trim()) newErrors.m1Roll = 'Member 1 Roll Number is required';
-    if (!formData.m2Name.trim()) newErrors.m2Name = 'Member 2 Name is required';
-    if (!formData.m2Roll.trim()) newErrors.m2Roll = 'Member 2 Roll Number is required';
+    if (!formData.m1Name.trim()) errs.m1Name = 'Member 1 Name is required.';
+    if (!formData.m1Roll.trim()) errs.m1Roll = 'Member 1 Roll Number is required.';
 
-    if (!receiptFile) newErrors.receipt = 'Payment screenshot or PDF receipt is required';
+    if (!formData.m2Name.trim()) errs.m2Name = 'Member 2 Name is required.';
+    if (!formData.m2Roll.trim()) errs.m2Roll = 'Member 2 Roll Number is required.';
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (!receiptFile) {
+      errs.receipt = 'Please attach your payment receipt proof.';
+    }
+
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm() || isSubmitting) return;
+    if (!validate()) return;
 
     setIsSubmitting(true);
-
     const generatedRegId = 'THRUST5-' + Math.floor(100000 + Math.random() * 900000);
+
     const payload = {
       regId: generatedRegId,
       timestamp: new Date().toISOString(),
-      ...formData,
-      paymentReceipt: receiptBase64,
-      fileName: receiptFile ? receiptFile.name : ''
+      teamName: formData.teamName.trim(),
+      teamLeader: formData.teamLeader.trim(),
+      leaderRoll: formData.leaderRoll.trim(),
+      leaderPhone: formData.leaderPhone.trim(),
+      m1Name: formData.m1Name.trim(),
+      m1Roll: formData.m1Roll.trim(),
+      m2Name: formData.m2Name.trim(),
+      m2Roll: formData.m2Roll.trim(),
+      m3Name: formData.m3Name.trim() || 'N/A',
+      m3Roll: formData.m3Roll.trim() || 'N/A',
+      fileName: receiptFile ? receiptFile.name : '',
+      fileMime: receiptFile ? receiptFile.type : '',
+      fileData: receiptBase64,
     };
 
-    const targetUrl = scriptUrl || DEFAULT_SCRIPT_URL;
+    const targetUrl = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
 
     try {
-      if (targetUrl) {
+      if (typeof window !== 'undefined') {
         const payloadString = JSON.stringify(payload);
-
-        // SINGLE Transmission via Hidden Iframe Form POST to prevent duplicate rows
-        const iframeName = 'thrust5_submit_iframe_single';
+        const iframeName = 'hidden_submission_iframe';
         let iframe = document.getElementById(iframeName);
         if (!iframe) {
           iframe = document.createElement('iframe');
@@ -203,7 +178,6 @@ export default function RegistrationForm() {
         }, 1200);
       }
 
-      // Save locally as backup
       const existing = JSON.parse(localStorage.getItem('thrust5_registrations') || '[]');
       existing.push(payload);
       localStorage.setItem('thrust5_registrations', JSON.stringify(existing));
@@ -229,7 +203,7 @@ export default function RegistrationForm() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // SUCCESS SCREEN WITH SINGLE "REGISTRATION DONE" BUTTON & WHATSAPP / ANNOUNCEMENT MESSAGE
+  // SUCCESS SCREEN WITH SINGLE "REGISTRATION DONE" BUTTON (NO FLOATING CTA ON THIS VIEW)
   if (submittedData) {
     return (
       <section id="register" className="py-16 sm:py-24 px-4 sm:px-6 bg-[#080C11] border-t border-[#1E3A5F]">
@@ -244,20 +218,26 @@ export default function RegistrationForm() {
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#29ABE2]/20 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-[#1E6FBA]/20 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Launch Rocket Animation Icon */}
+            {/* AFC Logo Emblem Icon */}
             <motion.div
-              initial={{ scale: 0, rotate: -45 }}
-              animate={{ scale: 1, rotate: 0 }}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring' }}
-              className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1E6FBA] to-[#29ABE2] p-0.5 mx-auto mb-4 shadow-lg shadow-[#29ABE2]/20"
+              className="w-20 h-20 rounded-2xl border-2 border-[#29ABE2] overflow-hidden mx-auto mb-4 shadow-xl shadow-[#29ABE2]/20 bg-[#080C11]"
             >
-              <div className="w-full h-full bg-[#0D1117] rounded-[14px] flex items-center justify-center text-4xl">
-                🚀
-              </div>
+              <img
+                src="/afc-user-logo.jpg"
+                alt="AFC Logo"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/afc-logo.png';
+                }}
+              />
             </motion.div>
 
             {/* Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold uppercase tracking-wider mb-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider mb-3">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               Registration Confirmed
             </div>
@@ -266,7 +246,7 @@ export default function RegistrationForm() {
               Registration <span className="text-[#29ABE2]">Successful!</span>
             </h3>
             <p className="text-xs sm:text-sm text-[#94A3B8] max-w-md mx-auto mb-5">
-              Your team data and payment proof have been officially logged in the competition spreadsheet.
+              Your team data and payment receipt proof have been logged into the official competition database.
             </p>
 
             {/* Ticket Card */}
@@ -302,9 +282,12 @@ export default function RegistrationForm() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#64748B] block text-[10px] uppercase font-mono">Payment Proof</span>
+                  <span className="text-[#64748B] block text-[10px] uppercase font-mono">Payment Status</span>
                   <span className="text-emerald-400 font-bold flex items-center gap-1">
-                    ✓ ₹120 Submitted
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                    ₹120 Submitted
                   </span>
                 </div>
               </div>
@@ -313,7 +296,11 @@ export default function RegistrationForm() {
             {/* Official Announcement Box */}
             <div className="bg-[#1E6FBA]/10 border border-[#29ABE2]/30 rounded-xl p-4 text-left mb-6 space-y-1.5">
               <div className="flex items-center gap-2 text-xs font-bold text-[#29ABE2] uppercase tracking-wider">
-                <span>📢</span> Important Notice for Participants:
+                <svg className="w-4 h-4 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 58.6l-7-7 7-7m8 14l-7-7 7-7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15L4 21l6.186-1.586" />
+                </svg>
+                Important Notice for Participants:
               </div>
               <p className="text-xs text-slate-200 leading-relaxed">
                 Stay tuned on the official <strong>Thrust 5.0 WhatsApp Group</strong> and website for the official rulebook, launch schedule, domain briefing, and event guidelines!
@@ -323,9 +310,12 @@ export default function RegistrationForm() {
             {/* Single Registration Done Button */}
             <button
               onClick={handleRegistrationDone}
-              className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#1E6FBA] to-[#29ABE2] hover:opacity-95 text-white font-heading font-extrabold text-sm uppercase tracking-wider transition-all shadow-lg shadow-[#29ABE2]/20"
+              className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#1E6FBA] to-[#29ABE2] hover:opacity-95 text-white font-heading font-extrabold text-sm uppercase tracking-wider transition-all shadow-lg shadow-[#29ABE2]/20 flex items-center justify-center gap-2"
             >
-              ✓ Registration Done
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+              Registration Done
             </button>
           </motion.div>
         </div>
@@ -362,12 +352,12 @@ export default function RegistrationForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="cyber-card p-5 sm:p-8 space-y-8"
+          className="cyber-card p-6 sm:p-10 space-y-8"
         >
-          {/* Section 1: Team Information */}
+          {/* Section 1: Team & Leader */}
           <div className="space-y-4">
             <div className="font-heading font-bold text-xs text-[#29ABE2] tracking-wider uppercase border-b border-[#1E3A5F] pb-2">
-              1. Team Information
+              1. Team & Leader Details
             </div>
 
             <div>
@@ -378,7 +368,7 @@ export default function RegistrationForm() {
                 id="teamName"
                 type="text"
                 className="mobile-input"
-                placeholder="e.g. AeroWolves"
+                placeholder="e.g. AeroDynamics 5"
                 value={formData.teamName}
                 onChange={(e) => updateField('teamName', e.target.value)}
               />
@@ -409,7 +399,7 @@ export default function RegistrationForm() {
                   id="leaderRoll"
                   type="text"
                   className="mobile-input"
-                  placeholder="e.g. 2024UCS001"
+                  placeholder="e.g. 2024CS101"
                   value={formData.leaderRoll}
                   onChange={(e) => updateField('leaderRoll', e.target.value)}
                 />
@@ -555,16 +545,21 @@ export default function RegistrationForm() {
                       className="w-32 h-32 object-cover rounded-lg mx-auto border border-[#1E3A5F]"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-lg bg-[#1E6FBA]/20 border border-[#29ABE2] flex items-center justify-center text-2xl mx-auto">
-                      📄
+                    <div className="w-12 h-12 rounded-lg bg-[#1E6FBA]/20 border border-[#29ABE2] flex items-center justify-center mx-auto text-[#29ABE2]">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
                     </div>
                   )}
                   <div>
                     <div className="font-bold text-xs text-white truncate max-w-xs mx-auto">
                       {receiptFile.name}
                     </div>
-                    <div className="text-[11px] text-emerald-400 font-semibold mt-0.5">
-                      ✓ Receipt Attached (Click to change)
+                    <div className="text-[11px] text-emerald-400 font-semibold mt-0.5 flex items-center justify-center gap-1">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Receipt Attached (Click to change)
                     </div>
                   </div>
                   <button
@@ -580,8 +575,10 @@ export default function RegistrationForm() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-[#111827] border border-[#1E3A5F] flex items-center justify-center text-xl mx-auto text-[#29ABE2]">
-                    📤
+                  <div className="w-12 h-12 rounded-full bg-[#111827] border border-[#1E3A5F] flex items-center justify-center mx-auto text-[#29ABE2]">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
                   </div>
                   <div className="font-bold text-xs text-white">
                     Drag & Drop UPI Payment Receipt Here
@@ -601,7 +598,7 @@ export default function RegistrationForm() {
             disabled={isSubmitting}
             className="btn-launch w-full text-base py-4 font-extrabold tracking-wider"
           >
-            {isSubmitting ? 'Uploading & Registering...' : 'Complete Team Registration →'}
+            {isSubmitting ? 'Uploading & Registering...' : 'Complete Team Registration'}
           </button>
         </motion.form>
       </div>

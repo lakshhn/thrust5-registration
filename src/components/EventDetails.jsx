@@ -3,10 +3,47 @@ import { motion } from 'framer-motion';
 
 export default function EventDetails() {
   const cards = [
-    { icon: '📅', label: 'Date', value: 'TBA 2025', desc: 'Mark your calendar' },
-    { icon: '🕐', label: 'Time', value: '09:00 AM', desc: 'Onwards' },
-    { icon: '📍', label: 'Venue', value: 'IIITDMJ Grounds', desc: 'Jabalpur Campus' },
-    { icon: '💰', label: 'Entry Fee', value: '₹120', desc: 'Per team total' },
+    {
+      label: 'Date',
+      value: 'TBA 2025',
+      desc: 'Mark your calendar',
+      icon: (
+        <svg className="w-6 h-6 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      )
+    },
+    {
+      label: 'Time',
+      value: '09:00 AM',
+      desc: 'Onwards',
+      icon: (
+        <svg className="w-6 h-6 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      )
+    },
+    {
+      label: 'Venue',
+      value: 'IIITDMJ Grounds',
+      desc: 'Jabalpur Campus',
+      icon: (
+        <svg className="w-6 h-6 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      )
+    },
+    {
+      label: 'Entry Fee',
+      value: '₹120',
+      desc: 'Per team total',
+      icon: (
+        <svg className="w-6 h-6 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      )
+    },
   ];
 
   const rules = [
@@ -35,7 +72,7 @@ export default function EventDetails() {
             Engineer. Build. <span className="text-[#29ABE2]">Launch.</span>
           </h2>
           <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed">
-            Thrust 5.0 is the premier hands-on engineering competition for first-years at IIITDMJ. Test your knowledge of aerodynamics, pressure dynamics, and rocket stability as you build and launch your custom water rocket.
+            Thrust 5.0 is the flagship hands-on engineering competition for first-years at IIITDMJ. Test your knowledge of aerodynamics, pressure dynamics, and rocket stability as you build and launch your custom water rocket.
           </p>
         </motion.div>
 
@@ -50,7 +87,7 @@ export default function EventDetails() {
               transition={{ duration: 0.4, delay: i * 0.08 }}
               className="cyber-card p-5 sm:p-6 hover:border-[#29ABE2] transition-colors group"
             >
-              <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-[#1E6FBA]/20 border border-[#29ABE2]/40 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 {card.icon}
               </div>
               <div className="font-mono text-[10px] font-bold tracking-widest text-[#29ABE2] uppercase mb-1">
@@ -75,8 +112,11 @@ export default function EventDetails() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="cyber-card p-6 sm:p-8 border-l-4 border-l-[#29ABE2]"
         >
-          <h3 className="font-heading font-bold text-lg sm:text-xl text-white mb-4 flex items-center gap-2">
-            <span>🚀</span> Competition Format & Guidelines
+          <h3 className="font-heading font-bold text-lg sm:text-xl text-white mb-4 flex items-center gap-2.5">
+            <svg className="w-5 h-5 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Competition Format & Guidelines
           </h3>
           <ul className="space-y-3">
             {rules.map((rule, idx) => (

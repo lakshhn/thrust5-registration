@@ -1,20 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function FloatingMobileCTA() {
+export default function FloatingMobileCTA({ isSubmitted }) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show bottom bar after user scrolls down 300px and hide when near bottom
-      const scrolled = window.scrollY > 300;
-      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 500;
-      setIsVisible(scrolled && !nearBottom);
+      if (isSubmitted) {
+        setIsVisible(false);
+        return;
+      }
+      // Show bottom bar after user scrolls down 250px and hide when near register section/bottom
+      const scrolled = window.scrollY > 250;
+      const registerSection = document.getElementById('register');
+      let isNearRegister = false;
+      if (registerSection) {
+        const rect = registerSection.getBoundingClientRect();
+        isNearRegister = rect.top <= window.innerHeight - 100;
+      }
+      setIsVisible(scrolled && !isNearRegister);
     };
 
     window.addEventListener('scroll', handleScroll);
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isSubmitted]);
+
+  if (isSubmitted) return null;
 
   return (
     <AnimatePresence>
