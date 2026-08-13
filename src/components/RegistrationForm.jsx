@@ -44,13 +44,12 @@ export default function RegistrationForm() {
     }
   };
 
-  // Handle File Selection
+  // Handle File Selection with Auto-Compression for Instant Upload
   const handleFileChange = (file) => {
     if (!file) return;
 
-    // Check size limit (max 8MB)
-    if (file.size > 8 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, receipt: 'File size must be under 8MB' }));
+    if (file.size > 12 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, receipt: 'File size must be under 12MB' }));
       return;
     }
 
@@ -63,12 +62,39 @@ export default function RegistrationForm() {
     setReceiptFile(file);
     setErrors((prev) => ({ ...prev, receipt: null }));
 
-    // Generate Preview if Image
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setReceiptPreview(reader.result);
-        setReceiptBase64(reader.result);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1000;
+          const MAX_HEIGHT = 1000;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width * MAX_HEIGHT) / height);
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+          setReceiptPreview(compressedBase64);
+          setReceiptBase64(compressedBase64);
+        };
+        img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     } else {

@@ -1,10 +1,14 @@
 /**
- * Thrust 5.0 Registration — Robust Google Apps Script Backend
+ * Thrust 5.0 Registration — Fail-Safe Google Apps Script Backend
  * 
- * Instructions:
- * 1. Replace all code in Google Sheets -> Extensions -> Apps Script with this file.
- * 2. Click "Save" and then "Deploy" -> "Manage deployments" -> Edit (pencil icon) -> "New version" -> "Deploy".
- * 3. Ensure "Who has access" is set to "Anyone".
+ * SETUP / UPDATE INSTRUCTIONS:
+ * 1. Go to your Google Sheet -> Extensions -> Apps Script.
+ * 2. Replace ALL code with this script.
+ * 3. Click "Save" (disk icon).
+ * 4. Click "Deploy" -> "Manage deployments".
+ * 5. Click the Pencil (Edit) icon.
+ * 6. Under "Version", select "New version".
+ * 7. Click "Deploy".
  */
 
 function doPost(e) {
@@ -14,7 +18,7 @@ function doPost(e) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     
-    // Ensure header row exists
+    // Auto-create Header Row if sheet is empty
     if (sheet.getLastRow() === 0) {
       sheet.appendRow([
         'Timestamp',
@@ -30,7 +34,7 @@ function doPost(e) {
         'Member 3 Roll No',
         'Rocketry Experience',
         'Primary Motivation',
-        'Payment Receipt File / Image Link'
+        'Payment Receipt File / Image'
       ]);
       
       var headerRange = sheet.getRange(1, 1, 1, 14);
@@ -39,6 +43,7 @@ function doPost(e) {
       headerRange.setFontWeight('bold');
     }
 
+    // Parse payload (supports JSON text/plain and form data)
     var data = {};
     if (e && e.postData && e.postData.contents) {
       try {
@@ -50,52 +55,76 @@ function doPost(e) {
       data = e.parameter;
     }
 
-    // Process image file if present
-    var receiptUrl = 'No File Uploaded';
+    var timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    var teamName = data.teamName || 'N/A';
+    var teamLeader = data.teamLeader || 'N/A';
+    var leaderRoll = data.leaderRoll || 'N/A';
+    var leaderPhone = "'" + (data.leaderPhone || '');
+    var m1Name = data.m1Name || 'N/A';
+    var m1Roll = data.m1Roll || 'N/A';
+    var m2Name = data.m2Name || 'N/A';
+    var m2Roll = data.m2Roll || 'N/A';
+    var m3Name = data.m3Name || '';
+    var m3Roll = data.m3Roll || '';
+    var experience = data.experience || 'N/A';
+    var motivation = data.motivation || 'N/A';
+
+    // FIRST: Append data row immediately so registration is NEVER lost!
+    var initialReceiptText = "Processing receipt...";
+    sheet.appendRow([
+      timestamp,
+      teamName,
+      teamLeader,
+      leaderRoll,
+      leaderPhone,
+      m1Name,
+      m1Roll,
+      m2Name,
+      m2Roll,
+      m3Name,
+      m3Roll,
+      experience,
+      motivation,
+      initialReceiptText
+    ]);
+
+    var lastRow = sheet.getLastRow();
+    var receiptUrl = "No Receipt File";
+
+    // SECOND: Process Payment Receipt Image into Google Drive
     var paymentReceipt = data.paymentReceipt || data.paymentBase64 || '';
-    
     if (paymentReceipt && paymentReceipt.indexOf('base64,') !== -1) {
       try {
         var folderName = "Thrust 5.0 Payment Receipts";
         var folders = DriveApp.getFoldersByName(folderName);
         var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
         
-        var base64Data = paymentReceipt.split('base64,')[1];
-        var contentType = paymentReceipt.split(';')[0].replace('data:', '');
-        var decoded = Utilities.base64Decode(base64Data);
-        var blob = Utilities.newBlob(decoded, contentType, (data.teamName || 'Team') + "_Receipt_" + new Date().getTime());
+        var parts = paymentReceipt.split('base64,');
+        var contentType = parts[0].replace('data:', '').replace(';base64', '');
+        var decoded = Utilities.base64Decode(parts[1]);
+        
+        var ext = "png";
+        if (contentType.indexOf("jpeg") !== -1 || contentType.indexOf("jpg") !== -1) ext = "jpg";
+        else if (contentType.indexOf("pdf") !== -1) ext = "pdf";
+        
+        var fileName = teamName.replace(/[^a-zA-Z0-9]/g, '_') + "_Receipt_" + new Date().getTime() + "." + ext;
+        var blob = Utilities.newBlob(decoded, contentType, fileName);
         
         var file = folder.createFile(blob);
         file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
         receiptUrl = file.getUrl();
-      } catch (err) {
-        receiptUrl = "Drive Error: " + err.toString();
+      } catch (driveErr) {
+        receiptUrl = "Receipt attached (Base64 length: " + paymentReceipt.length + " bytes). Drive save note: " + driveErr.toString();
       }
     } else if (paymentReceipt) {
       receiptUrl = paymentReceipt;
     }
 
-    var rowData = [
-      new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-      data.teamName || '',
-      data.teamLeader || '',
-      data.leaderRoll || '',
-      "'" + (data.leaderPhone || ''),
-      data.m1Name || '',
-      data.m1Roll || '',
-      data.m2Name || '',
-      data.m2Roll || '',
-      data.m3Name || '',
-      data.m3Roll || '',
-      data.experience || '',
-      data.motivation || '',
-      receiptUrl
-    ];
-
-    sheet.appendRow(rowData);
+    // Update the receipt cell in row N
+    sheet.getRange(lastRow, 14).setValue(receiptUrl);
 
     return ContentService
-      .createTextOutput(JSON.stringify({ result: 'success', row: sheet.getLastRow(), receiptUrl: receiptUrl }))
+      .createTextOutput(JSON.stringify({ result: 'success', row: lastRow, receiptUrl: receiptUrl }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
@@ -109,6 +138,6 @@ function doPost(e) {
 
 function doGet(e) {
   return ContentService
-    .createTextOutput(JSON.stringify({ status: 'active', service: 'Thrust 5.0 Registration API' }))
+    .createTextOutput(JSON.stringify({ status: 'active', message: 'Thrust 5.0 Registration Web App Ready' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
