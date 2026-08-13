@@ -121,12 +121,10 @@
           <header className={`fixed top-0 left-0 right-0 z-50 transition-all ${scrolled ? 'bg-[#0D1117]/95 border-b border-[#1E3A5F] py-2.5 shadow-lg' : 'bg-transparent py-4'}`}>
             <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
               <a href="#" className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg overflow-hidden border-2 border-[#29ABE2] bg-[#080C11]">
-                  <img src="/afc-user-logo.jpg" alt="AFC Logo" className="w-full h-full object-cover" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
-                </div>
+                <img src="/afc-user-logo.jpg" alt="Aero Fabrication Club" className="h-10 w-auto object-contain block" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
                 <div>
                   <div className="font-heading font-extrabold text-base tracking-wider text-white">THRUST <span className="text-[#29ABE2]">5.0</span></div>
-                  <div className="text-[10px] font-mono text-[#29ABE2] uppercase font-bold tracking-widest">AFC · IIITDMJ</div>
+                  <div className="text-[10px] font-mono text-[#29ABE2] uppercase font-bold tracking-widest">Aero Fabrication Club · IIITDMJ</div>
                 </div>
               </a>
               <div className="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
@@ -155,16 +153,12 @@
         return (
           <section className="relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 px-4 text-center bg-[#0D1117]">
             <div className="max-w-3xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111827] border border-[#29ABE2]/40 text-[#29ABE2] font-heading font-semibold text-xs uppercase tracking-widest mb-6">
-                <img src="/afc-user-logo.jpg" className="w-4 h-4 rounded-full border border-[#29ABE2]" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
-                Aero Fabrication Club · IIITDMJ
+              <div className="mb-6 flex justify-center">
+                <img src="/afc-user-logo.jpg" alt="Aero Fabrication Club" className="h-24 sm:h-28 w-auto object-contain block" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
               </div>
 
-              <div className="mb-4">
-                <img src="/thrust5-title.png" alt="THRUST 5.0" className="w-full max-w-md mx-auto rounded-2xl border border-[#29ABE2]/30 shadow-xl" onError={(e)=>{e.target.style.display='none';}} />
-                <h1 className="font-heading font-extrabold text-5xl sm:text-7xl md:text-8xl text-white tracking-tight leading-none">
-                  THRUST <span className="text-[#29ABE2]">5.0</span>
-                </h1>
+              <div className="my-2 py-2 flex flex-col items-center justify-center">
+                <img src="/thrust5-title-transparent.png" alt="THRUST 5.0" className="w-full max-w-2xl object-contain drop-shadow-[0_0_40px_rgba(41,171,226,0.6)] mix-blend-screen" onError={(e)=>{e.target.style.display='none';}} />
               </div>
 
               <p className="text-base sm:text-xl text-[#94A3B8] max-w-xl mx-auto mb-2">
@@ -174,7 +168,7 @@
                 Exclusively for First-Year Students
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center items-stretch max-w-md mx-auto mb-12">
-                <a href="#register" className="btn-launch text-sm py-3.5 px-8 font-bold">Register Your Team</a>
+                <a href="#register" className="btn-launch text-sm py-3.5 px-8 font-bold">Register Team</a>
                 <a href="#details" className="px-6 py-3.5 rounded-lg border border-[#1E3A5F] text-[#94A3B8] font-heading font-semibold text-xs uppercase tracking-wider">Event Details</a>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
@@ -333,9 +327,8 @@
         if (submittedData) return (
           <section id="register" className="py-20 px-4 bg-[#080C11] border-t border-[#1E3A5F]">
             <div className="max-w-xl mx-auto cyber-card p-8 text-center space-y-5 relative overflow-hidden">
-              <div className="w-20 h-20 rounded-2xl border-2 border-[#29ABE2] overflow-hidden mx-auto shadow-lg shadow-[#29ABE2]/20 bg-[#080C11]">
-                <img src="/afc-user-logo.jpg" className="w-full h-full object-cover" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
-              </div>
+              <img src="/afc-user-logo.jpg" alt="Aero Fabrication Club" className="h-20 w-auto mx-auto mb-4 block object-contain" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
+
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold uppercase tracking-wider mb-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
@@ -518,7 +511,7 @@
           <footer className="bg-[#080C11] border-t border-[#1E3A5F] py-8 px-4 text-center sm:text-left">
             <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-[#64748B]">
               <div className="flex items-center gap-3">
-                <img src="/afc-user-logo.jpg" className="w-8 h-8 rounded-lg border border-[#29ABE2]" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
+                <img src="/afc-user-logo.jpg" alt="Aero Fabrication Club" className="h-10 w-auto object-contain block" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
                 <div>
                   <div className="font-heading font-extrabold text-sm text-white mb-0.5">THRUST <span className="text-[#29ABE2]">5.0</span></div>
                   <div className="text-[#29ABE2] font-semibold">Aero Fabrication Club, IIITDM Jabalpur</div>

@@ -15,65 +15,56 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-[#0D1117]/95 border-b border-[#1E3A5F] backdrop-blur-md py-2.5 shadow-lg shadow-[#080C11]/50'
-          : 'bg-transparent py-4'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? 'bg-[#0D1117]/95 border-b border-[#1E3A5F] py-2.5 backdrop-blur-md shadow-xl'
+        : 'bg-transparent py-4'
+        }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Brand logo featuring official AFC user logo image */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+        {/* Brand Logo & Name - Official AFC Logo used directly as an image without changes */}
         <a href="#" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10 rounded-lg overflow-hidden border-2 border-[#29ABE2] shadow-md shadow-[#29ABE2]/20 group-hover:scale-105 transition-transform bg-[#080C11]">
-            <img
-              src="/afc-user-logo.jpg"
-              alt="Aero Fabrication Club Logo"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = '/afc-logo.png';
-              }}
-            />
-          </div>
+          <img
+            src="/afc-user-logo.jpg"
+            alt="Aero Fabrication Club Logo"
+            className="h-10 sm:h-11 w-auto object-contain block"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/afc-logo.png';
+            }}
+          />
           <div>
-            <div className="font-heading font-extrabold text-base sm:text-lg tracking-wider leading-none text-white flex items-center gap-1.5">
-              <span>THRUST</span> <span className="text-[#29ABE2]">5.0</span>
-            </div>
-            <div className="text-[10px] font-mono tracking-widest text-[#29ABE2] uppercase font-bold mt-0.5">
-              AERO FABRICATION CLUB · IIITDMJ
-            </div>
+            <span className="font-heading font-extrabold text-base sm:text-lg tracking-wider text-white block leading-tight">
+              THRUST <span className="text-[#29ABE2]">5.0</span>
+            </span>
+            <span className="text-[10px] font-mono text-[#29ABE2] tracking-widest uppercase font-bold block">
+              Aero Fabrication Club · IIITDMJ
+            </span>
           </div>
         </a>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-8">
-          <a
-            href="#details"
-            className="text-xs font-semibold uppercase tracking-wider text-[#94A3B8] hover:text-[#29ABE2] transition-colors"
-          >
+        {/* Desktop Navigation Links */}
+        <nav className="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+          <a href="#details" className="hover:text-[#29ABE2] transition-colors">
             Overview
           </a>
-          <a
-            href="#rules"
-            className="text-xs font-semibold uppercase tracking-wider text-[#94A3B8] hover:text-[#29ABE2] transition-colors"
-          >
-            Rules
+          <a href="#rules" className="hover:text-[#29ABE2] transition-colors">
+            Rules & Criteria
           </a>
           <a
             href="#register"
-            className="btn-launch px-5 py-2.5 text-xs font-bold shadow-md shadow-[#29ABE2]/20"
+            className="btn-launch px-5 py-2.5 text-xs tracking-wider uppercase font-extrabold shadow-md shadow-[#29ABE2]/20"
           >
             Register Team
           </a>
         </nav>
 
-        {/* Mobile Hamburger Button */}
+        {/* Mobile Menu Toggle Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2.5 rounded-lg bg-[#111827] border border-[#1E3A5F] text-[#29ABE2] focus:outline-none"
+          className="md:hidden p-2 text-[#29ABE2] hover:text-white transition-colors"
           aria-label="Toggle Navigation Menu"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             {mobileMenuOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             ) : (
@@ -83,36 +74,35 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Dropdown Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-            className="md:hidden bg-[#0D1117] border-b border-[#1E3A5F] px-4 pt-4 pb-6 space-y-4 shadow-2xl"
+            className="md:hidden bg-[#0D1117] border-b border-[#1E3A5F] px-4 py-5 space-y-4"
           >
             <a
               href="#details"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-semibold uppercase tracking-wider text-[#94A3B8] hover:text-white py-2 border-b border-[#1E3A5F]/40"
+              className="block text-sm font-semibold uppercase tracking-wider text-[#94A3B8] hover:text-[#29ABE2]"
             >
-              Event Overview
+              Overview
             </a>
             <a
               href="#rules"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-semibold uppercase tracking-wider text-[#94A3B8] hover:text-white py-2 border-b border-[#1E3A5F]/40"
+              className="block text-sm font-semibold uppercase tracking-wider text-[#94A3B8] hover:text-[#29ABE2]"
             >
-              Guidelines & Format
+              Rules & Criteria
             </a>
             <a
               href="#register"
               onClick={() => setMobileMenuOpen(false)}
-              className="btn-launch w-full text-center py-3 mt-4 text-xs font-extrabold uppercase tracking-wider"
+              className="btn-launch w-full text-center py-3 text-xs tracking-wider uppercase font-bold block"
             >
-              Register Team Now
+              Register Team
             </a>
           </motion.div>
         )}

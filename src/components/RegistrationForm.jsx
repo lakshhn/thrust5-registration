@@ -218,23 +218,19 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#29ABE2]/20 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-[#1E6FBA]/20 rounded-full blur-3xl pointer-events-none" />
 
-            {/* AFC Logo Emblem Icon */}
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
+            {/* AFC Logo - Used directly as provided */}
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, type: 'spring' }}
-              className="w-20 h-20 rounded-2xl border-2 border-[#29ABE2] overflow-hidden mx-auto mb-4 shadow-xl shadow-[#29ABE2]/20 bg-[#080C11]"
-            >
-              <img
-                src="/afc-user-logo.jpg"
-                alt="AFC Logo"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/afc-logo.png';
-                }}
-              />
-            </motion.div>
+              src="/afc-user-logo.jpg"
+              alt="Aero Fabrication Club Logo"
+              className="h-20 w-auto mx-auto mb-4 block object-contain"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = '/afc-logo.png';
+              }}
+            />
 
             {/* Status Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider mb-3">
