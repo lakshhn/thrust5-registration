@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Replace with your deployed Google Apps Script Web App URL
-const DEFAULT_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
 
 export default function RegistrationForm() {
   const [formData, setFormData] = useState({
@@ -112,7 +112,7 @@ export default function RegistrationForm() {
     if (!formData.teamName.trim()) newErrors.teamName = 'Team Name is required';
     if (!formData.teamLeader.trim()) newErrors.teamLeader = 'Team Leader Name is required';
     if (!formData.leaderRoll.trim()) newErrors.leaderRoll = 'Team Leader Roll Number is required';
-    
+
     if (!formData.leaderPhone.trim()) {
       newErrors.leaderPhone = 'Mobile Number is required';
     } else if (!/^\d{10}$/.test(formData.leaderPhone.replace(/\s/g, ''))) {
@@ -513,13 +513,12 @@ export default function RegistrationForm() {
               onDragOver={handleDrag}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current && fileInputRef.current.click()}
-              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
-                dragActive
-                  ? 'border-[#29ABE2] bg-[#29ABE2]/10'
-                  : receiptFile
+              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${dragActive
+                ? 'border-[#29ABE2] bg-[#29ABE2]/10'
+                : receiptFile
                   ? 'border-green-500/50 bg-[#0A0F16]'
                   : 'border-[#1E3A5F] hover:border-[#29ABE2]/60 bg-[#0A0F16]'
-              }`}
+                }`}
             >
               <input
                 ref={fileInputRef}

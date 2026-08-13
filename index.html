@@ -277,10 +277,18 @@
           return Object.keys(e).length === 0;
         };
 
-        const handleSubmit = (ev) => {
+        const handleSubmit = async (ev) => {
           ev.preventDefault();
           if (validate()) {
-            const data = { regId: 'THRUST5-' + Math.floor(100000 + Math.random() * 900000), ...form, fileName: file.name };
+            const data = { regId: 'THRUST5-' + Math.floor(100000 + Math.random() * 900000), timestamp: new Date().toISOString(), ...form, paymentReceipt: fileBase64, fileName: file.name };
+            try {
+              fetch('https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+              });
+            } catch(e) {}
             setSubmittedData(data);
           }
         };
