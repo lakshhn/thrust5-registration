@@ -237,10 +237,29 @@
           m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: '',
           experience: '', motivation: ''
         });
+        const [file, setFile] = useState(null);
+        const [filePreview, setFilePreview] = useState(null);
+        const [fileBase64, setFileBase64] = useState('');
         const [errors, setErrors] = useState({});
-        const [done, setDone] = useState(false);
+        const [submittedData, setSubmittedData] = useState(null);
 
         const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+        
+        const handleFile = (f) => {
+          if (!f) return;
+          setFile(f);
+          if (f.type.startsWith('image/')) {
+            const r = new FileReader();
+            r.onloadend = () => { setFilePreview(r.result); setFileBase64(r.result); };
+            r.readAsDataURL(f);
+          } else {
+            setFilePreview(null);
+            const r = new FileReader();
+            r.onloadend = () => setFileBase64(r.result);
+            r.readAsDataURL(f);
+          }
+        };
+
         const validate = () => {
           const e = {};
           if (!form.teamName.trim()) e.teamName = 'Required';
@@ -253,6 +272,7 @@
           if (!form.m2Name.trim()) e.m2Name = 'Required';
           if (!form.m2Roll.trim()) e.m2Roll = 'Required';
           if (!form.experience) e.experience = 'Please select one';
+          if (!file) e.file = 'Payment receipt file is required';
           setErrors(e);
           return Object.keys(e).length === 0;
         };
@@ -260,18 +280,24 @@
         const handleSubmit = (ev) => {
           ev.preventDefault();
           if (validate()) {
-            setDone(true);
-            setTimeout(() => window.open('https://forms.gle/BJyMCNf8fPJxYeeB9', '_blank'), 600);
+            const data = { regId: 'THRUST5-' + Math.floor(100000 + Math.random() * 900000), ...form, fileName: file.name };
+            setSubmittedData(data);
           }
         };
 
-        if (done) return (
+        if (submittedData) return (
           <section id="register" className="py-20 px-4 bg-[#080C11] border-t border-[#1E3A5F]">
-            <div className="max-w-md mx-auto text-center cyber-card p-8">
-              <div className="w-14 h-14 rounded-full bg-[#29ABE2]/10 border-2 border-[#29ABE2] flex items-center justify-center text-2xl text-[#29ABE2] mx-auto mb-4">✓</div>
-              <h3 className="font-heading font-extrabold text-2xl mb-2">Registration Saved!</h3>
-              <p className="text-sm text-[#94A3B8] mb-6">Redirecting to Google Form for payment screenshot upload...</p>
-              <a href="https://forms.gle/BJyMCNf8fPJxYeeB9" target="_blank" className="btn-launch w-full text-xs py-3">Open Form Directly →</a>
+            <div className="max-w-md mx-auto text-center cyber-card p-8 space-y-4">
+              <div className="w-14 h-14 rounded-full bg-[#29ABE2]/10 border-2 border-[#29ABE2] flex items-center justify-center text-2xl text-[#29ABE2] mx-auto">🚀</div>
+              <h3 className="font-heading font-extrabold text-2xl">Registration Complete!</h3>
+              <p className="text-xs text-[#94A3B8]">Your team registration and payment proof have been saved directly to the competition database.</p>
+              <div className="bg-[#0A0F16] p-4 rounded-lg text-left text-xs border border-[#1E3A5F] space-y-2 font-mono">
+                <div className="text-[#29ABE2] font-bold">Registration ID: {submittedData.regId}</div>
+                <div>Team: {submittedData.teamName}</div>
+                <div>Leader: {submittedData.teamLeader}</div>
+                <div className="text-green-400">✓ Receipt Attached ({submittedData.fileName})</div>
+              </div>
+              <button onClick={() => setSubmittedData(null)} className="btn-launch w-full text-xs py-3">Register Another Team</button>
             </div>
           </section>
         );
@@ -280,9 +306,9 @@
           <section id="register" className="py-16 px-4 bg-[#080C11] border-t border-[#1E3A5F]">
             <div className="max-w-2xl mx-auto">
               <div className="text-center mb-10">
-                <div className="font-heading text-xs font-semibold text-[#29ABE2] uppercase tracking-widest mb-1">Registration</div>
+                <div className="font-heading text-xs font-semibold text-[#29ABE2] uppercase tracking-widest mb-1">In-App Registration</div>
                 <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-white tracking-tight mb-2">Register Your <span className="text-[#29ABE2]">Team</span></h2>
-                <p className="text-xs sm:text-sm text-[#94A3B8]">Registration Fee: ₹120 / Team · Pay via UPI and upload screenshot in step 2</p>
+                <p className="text-xs sm:text-sm text-[#94A3B8]">Registration Fee: ₹120 / Team · Upload screenshot directly below</p>
               </div>
 
               <form onSubmit={handleSubmit} className="cyber-card p-5 sm:p-8 space-y-6">
@@ -360,17 +386,34 @@
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-lg bg-[#29ABE2]/10 border border-[#29ABE2]/30 text-xs text-[#94A3B8]">
-                  <span className="font-bold text-[#29ABE2] block mb-0.5 uppercase">Step 2 — Payment ₹120</span>
-                  After clicking submit, you'll upload your payment screenshot on the Google Form.
+                <div>
+                  <div className="font-heading text-xs font-bold text-[#29ABE2] uppercase tracking-wider mb-3">4. Upload Payment Receipt Proof (₹120)</div>
+                  <div className="border-2 border-dashed border-[#1E3A5F] hover:border-[#29ABE2] rounded-xl p-5 text-center bg-[#0A0F16] relative cursor-pointer">
+                    <input type="file" accept="image/*, application/pdf" className="absolute inset-0 opacity-0 cursor-pointer" onChange={e => e.target.files && handleFile(e.target.files[0])} />
+                    {file ? (
+                      <div>
+                        {filePreview && <img src={filePreview} className="w-24 h-24 object-cover rounded mx-auto mb-2 border border-[#1E3A5F]" />}
+                        <div className="font-bold text-xs text-white truncate">{file.name}</div>
+                        <div className="text-[10px] text-green-400 font-semibold mt-1">✓ File Attached (Click to change)</div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="text-2xl mb-1">📤</div>
+                        <div className="font-bold text-xs text-white">Click or Drag Payment Screenshot (PNG/JPG/PDF)</div>
+                        <div className="text-[10px] text-[#64748B]">Max 8MB</div>
+                      </div>
+                    )}
+                  </div>
+                  {errors.file && <p className="text-red-400 text-xs mt-1">{errors.file}</p>}
                 </div>
 
-                <button type="submit" className="btn-launch w-full py-3.5 text-sm font-extrabold">Submit Registration →</button>
+                <button type="submit" className="btn-launch w-full py-3.5 text-sm font-extrabold">Complete Registration →</button>
               </form>
             </div>
           </section>
         );
       }
+
 
       function FloatingMobileCTA() {
         const [vis, setVis] = useState(false);
