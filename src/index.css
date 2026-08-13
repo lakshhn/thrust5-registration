@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #0D1117;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: #0D1117;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0D1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E6FBA;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #29ABE2;
+}
+
+/* Touch-optimized form input styling (prevents iOS auto-zoom) */
+.mobile-input {
+  font-size: 16px !important; /* Minimum 16px for iOS zoom prevention */
+  height: 50px;
+  background: #0a0f16;
+  border: 1.5px solid #1E3A5F;
+  color: #ffffff;
+  padding: 0 16px;
+  border-radius: 8px;
+  width: 100%;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.mobile-input:focus {
+  border-color: #29ABE2;
+  box-shadow: 0 0 0 3px rgba(41, 171, 226, 0.15);
+}
+
+.mobile-input::placeholder {
+  color: #4B6280;
+}
+
+/* Glassmorphism Card without generic blur */
+.cyber-card {
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid #1E3A5F;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-card-glow {
+  border-color: #29ABE2;
+  box-shadow: 0 0 20px rgba(41, 171, 226, 0.12);
+}
+
+/* Custom primary CTA button */
+.btn-launch {
+  background: #29ABE2;
+  color: #0D1117;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(41, 171, 226, 0.25);
+}
+
+.btn-launch:hover {
+  background: #1E6FBA;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(30, 111, 186, 0.4);
+}
+
+.btn-launch:active {
+  transform: scale(0.98);
+}

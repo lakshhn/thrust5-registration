@@ -2,346 +2,426 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Thrust 5.0 — Water Rocket Competition | AFC IIITDMJ</title>
   <meta name="description" content="Register your team for Thrust 5.0 — the flagship water rocket competition by Aero Fabrication Club, IIITDMJ. Exclusively for first-year students." />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: { bg: '#0D1117', afcblue: '#1E6FBA', afccyan: '#29ABE2' },
-          fontFamily: { heading: ['Space Grotesk','sans-serif'], body: ['Inter','sans-serif'] }
+          colors: {
+            brand: {
+              bg: '#0D1117',
+              surface: '#111827',
+              border: '#1E3A5F',
+              blue: '#1E6FBA',
+              cyan: '#29ABE2',
+              muted: '#64748B',
+            }
+          },
+          fontFamily: {
+            heading: ['Space Grotesk', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+          }
         }
       }
     }
   </script>
+
+  <!-- React 18 & Framer Motion UMD for immediate preview -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
+
   <style>
-    *{box-sizing:border-box;}
-    body{background:#0D1117;color:#fff;font-family:'Inter',sans-serif;margin:0;}
-    html{scroll-behavior:smooth;}
-    ::-webkit-scrollbar{width:5px;}
-    ::-webkit-scrollbar-track{background:#0D1117;}
-    ::-webkit-scrollbar-thumb{background:#1E6FBA;border-radius:3px;}
-    .ifield{width:100%;background:#0a0f16;border:1.5px solid #1E3A5F;color:#fff;padding:12px 16px;border-radius:6px;font-family:'Inter',sans-serif;font-size:14px;transition:border-color 0.2s;outline:none;}
-    .ifield:focus{border-color:#29ABE2;}
-    .ifield::placeholder{color:#3D5066;}
-    .ifield option{background:#0D1117;}
-    .btn{background:#29ABE2;color:#0D1117;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.06em;padding:13px 28px;border:none;border-radius:6px;cursor:pointer;transition:background 0.2s,transform 0.1s;text-transform:uppercase;}
-    .btn:hover{background:#1E6FBA;color:#fff;}
-    .btn:active{transform:scale(0.98);}
-    .card{background:#0f1724;border:1px solid #1E3A5F;border-radius:8px;padding:24px;}
-    .slabel{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#29ABE2;margin-bottom:8px;}
-    .flabel{display:block;font-size:13px;font-weight:500;color:#7A90A8;margin-bottom:6px;}
-    .req{color:#29ABE2;}
-    .fgroup{margin-bottom:18px;}
-    .errmsg{color:#F87171;font-size:12px;margin-top:4px;}
-    .divider{border:none;border-top:1px solid #1E3A5F;margin:24px 0;}
-    .mhdr{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;color:#29ABE2;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;}
-    .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 20px;}
-    .rlabel{display:flex;align-items:center;gap:8px;font-size:14px;color:#CBD5E1;cursor:pointer;}
-    .rlabel input{accent-color:#29ABE2;width:15px;height:15px;}
-    .rgroup{display:flex;gap:20px;flex-wrap:wrap;margin-top:6px;}
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; background: #0D1117; color: #fff; font-family: 'Inter', sans-serif; }
+    body { margin: 0; padding: 0; overflow-x: hidden; }
+    
+    .mobile-input {
+      font-size: 16px !important;
+      height: 48px;
+      background: #0a0f16;
+      border: 1.5px solid #1E3A5F;
+      color: #ffffff;
+      padding: 0 16px;
+      border-radius: 8px;
+      width: 100%;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .mobile-input:focus { border-color: #29ABE2; }
+    .mobile-input::placeholder { color: #4B6280; }
+    .mobile-input option { background: #0D1117; }
+    
+    .btn-launch {
+      background: #29ABE2;
+      color: #0D1117;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: 8px;
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease-in-out;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-launch:hover { background: #1E6FBA; color: #ffffff; }
+    .btn-launch:active { transform: scale(0.98); }
+
+    .cyber-card {
+      background: #0f1724;
+      border: 1px solid #1E3A5F;
+      border-radius: 12px;
+    }
   </style>
 </head>
-<body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState } = React;
-const FM = window.FramerMotion || window.Motion || {};
-const motion = FM.motion || {
-  div: (props) => <div {...props} />,
-  h1: (props) => <h1 {...props} />,
-  p: (props) => <p {...props} />,
-  form: (props) => <form {...props} />
-};
+<body class="bg-[#0D1117] text-white">
+  <div id="root"></div>
 
+  <!-- Standard Vite Module Script -->
+  <script type="module" src="/src/main.jsx"></script>
 
-function Nav() {
-  return (
-    <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:100,background:'rgba(13,17,23,0.96)',borderBottom:'1px solid #1E3A5F',backdropFilter:'blur(8px)'}}>
-      <div style={{maxWidth:1160,margin:'0 auto',padding:'0 24px',height:58,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <span style={{fontFamily:'Space Grotesk',fontWeight:800,fontSize:17,letterSpacing:'0.04em'}}>
-          <span style={{color:'#29ABE2'}}>AFC</span><span style={{color:'#4B6280'}}> · </span><span>IIITDMJ</span>
-        </span>
-        <a href="#register" style={{textDecoration:'none'}}><button className="btn" style={{padding:'8px 18px',fontSize:12}}>Register Now</button></a>
-      </div>
-    </nav>
-  );
-}
+  <!-- Fallback standalone runtime script for static file viewing -->
+  <script type="text/babel">
+    if (!window.__VITE_REACT_LOADED__) {
+      const { useState, useEffect } = React;
+      const FM = window.FramerMotion || window.Motion || {};
+      const motion = FM.motion || {
+        div: (props) => <div {...props} />,
+        h1: (props) => <h1 {...props} />,
+        p: (props) => <p {...props} />,
+        form: (props) => <form {...props} />,
+        section: (props) => <section {...props} />,
+        header: (props) => <header {...props} />
+      };
 
-function Hero() {
-  return (
-    <section style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',paddingTop:58,background:'#0D1117',position:'relative',overflow:'hidden'}}>
-      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(30,111,186,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(30,111,186,0.06) 1px,transparent 1px)',backgroundSize:'52px 52px',pointerEvents:'none'}} />
-      <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:'600px',height:'600px',background:'radial-gradient(circle,rgba(41,171,226,0.04) 0%,transparent 70%)',pointerEvents:'none'}} />
-      <div style={{textAlign:'center',padding:'0 24px',maxWidth:900,position:'relative',zIndex:1}}>
-        <motion.div className="slabel" initial={{opacity:0,y:-12}} animate={{opacity:1,y:0}} transition={{duration:0.45}}>
-          Aero Fabrication Club · IIITDMJ
-        </motion.div>
-        <motion.h1
-          initial={{opacity:0,y:28}} animate={{opacity:1,y:0}} transition={{duration:0.5,delay:0.1}}
-          style={{fontFamily:'Space Grotesk',fontWeight:800,fontSize:'clamp(72px,14vw,140px)',lineHeight:0.92,letterSpacing:'-0.03em',margin:'14px 0 0'}}
-        >
-          THRUST
-        </motion.h1>
-        <motion.h1
-          initial={{opacity:0,y:28}} animate={{opacity:1,y:0}} transition={{duration:0.5,delay:0.18}}
-          style={{fontFamily:'Space Grotesk',fontWeight:800,fontSize:'clamp(72px,14vw,140px)',lineHeight:0.92,letterSpacing:'-0.03em',margin:'0 0 24px',color:'#29ABE2'}}
-        >
-          5.0
-        </motion.h1>
-        <motion.p
-          initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.5,delay:0.3}}
-          style={{fontFamily:'Inter',fontSize:'clamp(14px,2vw,18px)',color:'#4B6280',maxWidth:580,margin:'0 auto 6px',lineHeight:1.6}}
-        >
-          The Ultimate Water Rocket Challenge
-        </motion.p>
-        <motion.p
-          initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.5,delay:0.36}}
-          style={{fontFamily:'Space Grotesk',fontWeight:600,fontSize:'clamp(11px,1.4vw,13px)',color:'#29ABE2',letterSpacing:'0.18em',textTransform:'uppercase',marginBottom:44}}
-        >
-          Exclusively for First-Years
-        </motion.p>
-        <motion.div
-          initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:0.45,delay:0.44}}
-          style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap'}}
-        >
-          <a href="#register" style={{textDecoration:'none'}}><button className="btn" style={{fontSize:15,padding:'14px 36px'}}>Register Your Team</button></a>
-          <a href="#details" style={{textDecoration:'none'}}>
-            <button style={{background:'transparent',color:'#7A90A8',fontFamily:'Space Grotesk',fontWeight:600,fontSize:13,padding:'14px 32px',border:'1.5px solid #1E3A5F',borderRadius:6,cursor:'pointer',letterSpacing:'0.06em',textTransform:'uppercase',transition:'all 0.2s'}}
-              onMouseEnter={e=>{e.target.style.borderColor='#29ABE2';e.target.style.color='#fff';}}
-              onMouseLeave={e=>{e.target.style.borderColor='#1E3A5F';e.target.style.color='#7A90A8';}}>
-              Event Details
-            </button>
-          </a>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function Details() {
-  const cards = [
-    {icon:'📅',label:'Date',val:'TBA — 2025'},
-    {icon:'🕐',label:'Time',val:'9:00 AM Onwards'},
-    {icon:'📍',label:'Venue',val:'IIITDMJ Campus'},
-    {icon:'💰',label:'Entry Fee',val:'₹120 / Team'},
-  ];
-  const rules = ['Teams of 2–4 members','First-year students only','Water rockets — no combustibles','Judged on height, stability & design'];
-  return (
-    <section id="details" style={{background:'#0D1117',padding:'100px 24px'}}>
-      <div style={{maxWidth:1100,margin:'0 auto'}}>
-        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.45}}>
-          <div className="slabel" style={{textAlign:'center'}}>Event Details</div>
-          <h2 style={{fontFamily:'Space Grotesk',fontWeight:800,fontSize:'clamp(28px,5vw,50px)',textAlign:'center',margin:'8px 0 14px',letterSpacing:'-0.02em'}}>
-            Engineer. Build. <span style={{color:'#29ABE2'}}>Launch.</span>
-          </h2>
-          <p style={{textAlign:'center',color:'#4B6280',maxWidth:640,margin:'0 auto 56px',fontSize:15,lineHeight:1.85}}>
-            Apply aerodynamics, propulsion, and hands-on fabrication to design a water rocket that achieves the highest thrust and most stable flight. No prior experience required — just engineering curiosity and a competitive spirit.
-          </p>
-        </motion.div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14,marginBottom:20}}>
-          {cards.map((c,i)=>(
-            <motion.div key={c.label} className="card" initial={{opacity:0,y:18}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.4,delay:i*0.07}}>
-              <div style={{fontSize:26,marginBottom:10}}>{c.icon}</div>
-              <div style={{fontFamily:'Inter',fontSize:10,fontWeight:600,letterSpacing:'0.18em',textTransform:'uppercase',color:'#29ABE2',marginBottom:5}}>{c.label}</div>
-              <div style={{fontFamily:'Space Grotesk',fontWeight:700,fontSize:19,color:'#fff'}}>{c.val}</div>
-            </motion.div>
-          ))}
-        </div>
-        <motion.div initial={{opacity:0,y:14}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.4,delay:0.2}}
-          style={{background:'#0f1724',border:'1px solid #1E3A5F',borderLeft:'3px solid #29ABE2',borderRadius:8,padding:'18px 22px'}}>
-          <div style={{fontFamily:'Space Grotesk',fontWeight:700,fontSize:13,color:'#fff',marginBottom:10,letterSpacing:'0.05em',textTransform:'uppercase'}}>Quick Rules</div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:'8px 0'}}>
-            {rules.map(r=>(
-              <div key={r} style={{display:'flex',alignItems:'center',gap:10,fontSize:13,color:'#7A90A8'}}>
-                <span style={{color:'#29ABE2',fontWeight:700,fontSize:16}}>→</span>{r}
+      function Navbar() {
+        const [scrolled, setScrolled] = useState(false);
+        const [open, setOpen] = useState(false);
+        useEffect(() => {
+          const h = () => setScrolled(window.scrollY > 20);
+          window.addEventListener('scroll', h);
+          return () => window.removeEventListener('scroll', h);
+        }, []);
+        return (
+          <header className={`fixed top-0 left-0 right-0 z-50 transition-all ${scrolled ? 'bg-[#0D1117]/95 border-b border-[#1E3A5F] py-3' : 'bg-transparent py-4'}`}>
+            <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
+              <a href="#" className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded bg-[#1E6FBA]/20 border border-[#29ABE2] flex items-center justify-center font-bold text-[#29ABE2]">🚀</div>
+                <div className="font-heading font-extrabold text-base tracking-wider text-white">THRUST <span className="text-[#29ABE2]">5.0</span></div>
+              </a>
+              <div className="hidden md:flex items-center gap-6 text-sm text-[#94A3B8]">
+                <a href="#details" className="hover:text-[#29ABE2]">Overview</a>
+                <a href="#rules" className="hover:text-[#29ABE2]">Rules</a>
+                <a href="#register" className="btn-launch px-4 py-2 text-xs">Register Team</a>
               </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function RegistrationForm() {
-  const [form,setForm] = useState({teamName:'',teamLeader:'',leaderRoll:'',leaderPhone:'',m1Name:'',m1Roll:'',m2Name:'',m2Roll:'',m3Name:'',m3Roll:'',experience:'',motivation:''});
-  const [errors,setErrors] = useState({});
-  const [done,setDone] = useState(false);
-  const set = (k,v) => setForm(f=>({...f,[k]:v}));
-
-  const validate = () => {
-    const e={};
-    if(!form.teamName.trim()) e.teamName='Required';
-    if(!form.teamLeader.trim()) e.teamLeader='Required';
-    if(!form.leaderRoll.trim()) e.leaderRoll='Required';
-    if(!form.leaderPhone.trim()) e.leaderPhone='Required';
-    else if(!/^\d{10}$/.test(form.leaderPhone.replace(/\s/g,''))) e.leaderPhone='Enter a valid 10-digit number';
-    if(!form.m1Name.trim()) e.m1Name='Required';
-    if(!form.m1Roll.trim()) e.m1Roll='Required';
-    if(!form.m2Name.trim()) e.m2Name='Required';
-    if(!form.m2Roll.trim()) e.m2Roll='Required';
-    if(!form.experience) e.experience='Please select one';
-    setErrors(e);
-    return Object.keys(e).length===0;
-  };
-
-  const handleSubmit = (ev) => {
-    ev.preventDefault();
-    if(validate()){ setDone(true); setTimeout(()=>window.open('https://forms.gle/BJyMCNf8fPJxYeeB9','_blank'),600); }
-  };
-
-  const F = ({id,label,req,type='text',ph,val,onChange,err,rows}) => (
-    <div className="fgroup">
-      <label className="flabel" htmlFor={id}>{label}{req&&<span className="req"> *</span>}</label>
-      {rows
-        ? <textarea id={id} className="ifield" placeholder={ph} value={val} onChange={e=>onChange(e.target.value)} rows={rows} />
-        : <input id={id} type={type} className="ifield" placeholder={ph} value={val} onChange={e=>onChange(e.target.value)} />
+              <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-[#29ABE2]">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {open ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
+                </svg>
+              </button>
+            </div>
+            {open && (
+              <div className="md:hidden bg-[#0D1117] border-b border-[#1E3A5F] px-4 py-4 space-y-3">
+                <a href="#details" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Overview</a>
+                <a href="#rules" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Rules</a>
+                <a href="#register" onClick={() => setOpen(false)} className="btn-launch w-full text-center py-2.5 text-xs">Register Team →</a>
+              </div>
+            )}
+          </header>
+        );
       }
-      {err&&<div className="errmsg">{err}</div>}
-    </div>
-  );
 
-  if(done) return (
-    <section id="register" style={{background:'#080C11',padding:'120px 24px',borderTop:'1px solid #1E3A5F'}}>
-      <div style={{maxWidth:500,margin:'0 auto',textAlign:'center'}}>
-        <motion.div initial={{scale:0.8,opacity:0}} animate={{scale:1,opacity:1}} transition={{duration:0.4}}>
-          <div style={{width:68,height:68,borderRadius:'50%',background:'rgba(41,171,226,0.1)',border:'2px solid #29ABE2',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,margin:'0 auto 22px'}}>✓</div>
-          <h2 style={{fontFamily:'Space Grotesk',fontWeight:800,fontSize:30,marginBottom:10}}>Submitted!</h2>
-          <p style={{color:'#4B6280',fontSize:15,marginBottom:20,lineHeight:1.7}}>Redirecting you to Google Form to upload payment screenshot...</p>
-          <a href="https://forms.gle/BJyMCNf8fPJxYeeB9" target="_blank" style={{color:'#29ABE2',fontSize:14}}>Click here if it didn't open →</a>
-        </motion.div>
-      </div>
-    </section>
-  );
-
-  return (
-    <section id="register" style={{background:'#080C11',padding:'100px 24px',borderTop:'1px solid #1E3A5F'}}>
-      <div style={{maxWidth:760,margin:'0 auto'}}>
-        <motion.div initial={{opacity:0,y:18}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.45}}>
-          <div className="slabel" style={{textAlign:'center'}}>Registration</div>
-          <h2 style={{fontFamily:'Space Grotesk',fontWeight:800,fontSize:'clamp(28px,5vw,44px)',textAlign:'center',margin:'8px 0 10px',letterSpacing:'-0.02em'}}>
-            Register Your <span style={{color:'#29ABE2'}}>Team</span>
-          </h2>
-          <p style={{textAlign:'center',color:'#4B6280',marginBottom:44,fontSize:14}}>Registration fee: ₹120/team · Pay via UPI and upload screenshot in step 2</p>
-        </motion.div>
-        <motion.form onSubmit={handleSubmit} initial={{opacity:0,y:18}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.45,delay:0.1}}>
-          <div className="card">
-
-            <div className="mhdr">Team Information</div>
-            <F id="teamName" label="Team Name" req ph="e.g. AeroWolves" val={form.teamName} onChange={v=>set('teamName',v)} err={errors.teamName} />
-            <div className="grid2">
-              <F id="teamLeader" label="Team Leader Name" req ph="Full name" val={form.teamLeader} onChange={v=>set('teamLeader',v)} err={errors.teamLeader} />
-              <F id="leaderRoll" label="Leader's Roll Number" req ph="e.g. 2024UCS001" val={form.leaderRoll} onChange={v=>set('leaderRoll',v)} err={errors.leaderRoll} />
+      function Hero() {
+        return (
+          <section className="relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 px-4 text-center bg-[#0D1117]">
+            <div className="max-w-3xl mx-auto">
+              <div className="inline-block px-3.5 py-1 rounded-full bg-[#111827] border border-[#1E3A5F] text-[#29ABE2] font-heading font-semibold text-xs uppercase tracking-widest mb-6">
+                Aero Fabrication Club · IIITDMJ
+              </div>
+              <h1 className="font-heading font-extrabold text-5xl sm:text-7xl md:text-8xl text-white tracking-tight leading-none mb-4">
+                THRUST <span className="text-[#29ABE2]">5.0</span>
+              </h1>
+              <p className="text-base sm:text-xl text-[#94A3B8] max-w-xl mx-auto mb-2">
+                The Ultimate Water Rocket Challenge
+              </p>
+              <div className="font-heading font-bold text-xs sm:text-sm text-[#29ABE2] tracking-widest uppercase mb-8">
+                Exclusively for First-Year Students
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center items-stretch max-w-md mx-auto mb-12">
+                <a href="#register" className="btn-launch text-sm py-3.5 px-8 font-bold">Register Your Team →</a>
+                <a href="#details" className="px-6 py-3.5 rounded-lg border border-[#1E3A5F] text-[#94A3B8] font-heading font-semibold text-xs uppercase tracking-wider">Event Details</a>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
+                <div className="p-3 rounded-lg bg-[#111827] border border-[#1E3A5F]">
+                  <div className="text-[10px] text-[#29ABE2] font-mono uppercase font-bold">Eligibility</div>
+                  <div className="text-xs font-semibold text-white mt-0.5">1st Years Only</div>
+                </div>
+                <div className="p-3 rounded-lg bg-[#111827] border border-[#1E3A5F]">
+                  <div className="text-[10px] text-[#29ABE2] font-mono uppercase font-bold">Team Size</div>
+                  <div className="text-xs font-semibold text-white mt-0.5">2 - 4 Members</div>
+                </div>
+                <div className="p-3 rounded-lg bg-[#111827] border border-[#1E3A5F]">
+                  <div className="text-[10px] text-[#29ABE2] font-mono uppercase font-bold">Fee</div>
+                  <div className="text-xs font-semibold text-white mt-0.5">₹120 / Team</div>
+                </div>
+                <div className="p-3 rounded-lg bg-[#111827] border border-[#1E3A5F]">
+                  <div className="text-[10px] text-[#29ABE2] font-mono uppercase font-bold">Host</div>
+                  <div className="text-xs font-semibold text-white mt-0.5">AFC IIITDMJ</div>
+                </div>
+              </div>
             </div>
-            <F id="leaderPhone" label="Leader's Phone Number" req type="tel" ph="10-digit number" val={form.leaderPhone} onChange={v=>set('leaderPhone',v)} err={errors.leaderPhone} />
+          </section>
+        );
+      }
 
-            <hr className="divider" />
-            <div className="mhdr">Member 1</div>
-            <div className="grid2">
-              <F id="m1n" label="Name" req ph="Full name" val={form.m1Name} onChange={v=>set('m1Name',v)} err={errors.m1Name} />
-              <F id="m1r" label="Roll Number" req ph="e.g. 2024UCS002" val={form.m1Roll} onChange={v=>set('m1Roll',v)} err={errors.m1Roll} />
-            </div>
-
-            <hr className="divider" />
-            <div className="mhdr">Member 2</div>
-            <div className="grid2">
-              <F id="m2n" label="Name" req ph="Full name" val={form.m2Name} onChange={v=>set('m2Name',v)} err={errors.m2Name} />
-              <F id="m2r" label="Roll Number" req ph="e.g. 2024UCS003" val={form.m2Roll} onChange={v=>set('m2Roll',v)} err={errors.m2Roll} />
-            </div>
-
-            <hr className="divider" />
-            <div className="mhdr" style={{color:'#4B6280'}}>Member 3 <span style={{fontWeight:400,fontSize:11,textTransform:'none',letterSpacing:0}}>(optional)</span></div>
-            <div className="grid2">
-              <F id="m3n" label="Name" ph="Full name" val={form.m3Name} onChange={v=>set('m3Name',v)} />
-              <F id="m3r" label="Roll Number" ph="e.g. 2024UCS004" val={form.m3Roll} onChange={v=>set('m3Roll',v)} />
-            </div>
-
-            <hr className="divider" />
-            <div className="fgroup">
-              <label className="flabel">Prior experience with model rocketry or aeronautics?<span className="req"> *</span></label>
-              <div className="rgroup">
-                {['Yes','No'].map(o=>(
-                  <label key={o} className="rlabel">
-                    <input type="radio" name="exp" value={o} checked={form.experience===o} onChange={()=>set('experience',o)} />{o}
-                  </label>
+      function EventDetails() {
+        const cards = [
+          { icon: '📅', label: 'Date', val: 'TBA 2025' },
+          { icon: '🕐', label: 'Time', val: '09:00 AM' },
+          { icon: '📍', label: 'Venue', val: 'IIITDMJ Grounds' },
+          { icon: '💰', label: 'Entry Fee', val: '₹120 / Team' },
+        ];
+        return (
+          <section id="details" className="py-16 px-4 bg-[#0D1117] border-t border-[#1E3A5F]">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-12">
+                <div className="font-heading text-xs font-semibold text-[#29ABE2] uppercase tracking-widest mb-1">Event Overview</div>
+                <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-white tracking-tight mb-3">
+                  Engineer. Build. <span className="text-[#29ABE2]">Launch.</span>
+                </h2>
+                <p className="text-sm sm:text-base text-[#94A3B8] max-w-2xl mx-auto leading-relaxed">
+                  Design and fabricate high-performance water rockets. Compete for max flight height, aerodynamic stability, and engineering finesse.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+                {cards.map(c => (
+                  <div key={c.label} className="cyber-card p-4">
+                    <div className="text-2xl mb-2">{c.icon}</div>
+                    <div className="text-[10px] text-[#29ABE2] font-mono font-bold uppercase">{c.label}</div>
+                    <div className="font-heading font-bold text-lg text-white">{c.val}</div>
+                  </div>
                 ))}
               </div>
-              {errors.experience&&<div className="errmsg">{errors.experience}</div>}
+              <div id="rules" className="cyber-card p-6 border-l-4 border-l-[#29ABE2]">
+                <h3 className="font-heading font-bold text-base text-white mb-3 flex items-center gap-2">🚀 Competition Rules</h3>
+                <ul className="space-y-2 text-xs sm:text-sm text-[#94A3B8]">
+                  <li>• Exclusively for 1st-year undergraduate students of IIITDMJ.</li>
+                  <li>• Team size: 2 to 4 members with a designated Team Leader.</li>
+                  <li>• Propulsion: Water + pressurized air only (no chemical propellants).</li>
+                  <li>• Judged on apogee (max height), flight stability, and rocket aesthetics.</li>
+                </ul>
+              </div>
             </div>
+          </section>
+        );
+      }
 
-            <div className="fgroup">
-              <label className="flabel" htmlFor="motiv">Primary motivation for participating</label>
-              <select id="motiv" className="ifield" value={form.motivation} onChange={e=>set('motivation',e.target.value)}>
-                <option value="">Select an option</option>
-                <option>To learn about aerodynamics</option>
-                <option>To gain hands-on fabrication experience</option>
-                <option>To compete for prizes</option>
-                <option>Just for fun / team building</option>
-              </select>
+      function RegistrationForm() {
+        const [form, setForm] = useState({
+          teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',
+          m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: '',
+          experience: '', motivation: ''
+        });
+        const [errors, setErrors] = useState({});
+        const [done, setDone] = useState(false);
+
+        const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+        const validate = () => {
+          const e = {};
+          if (!form.teamName.trim()) e.teamName = 'Required';
+          if (!form.teamLeader.trim()) e.teamLeader = 'Required';
+          if (!form.leaderRoll.trim()) e.leaderRoll = 'Required';
+          if (!form.leaderPhone.trim()) e.leaderPhone = 'Required';
+          else if (!/^\d{10}$/.test(form.leaderPhone.replace(/\s/g, ''))) e.leaderPhone = 'Enter valid 10-digit number';
+          if (!form.m1Name.trim()) e.m1Name = 'Required';
+          if (!form.m1Roll.trim()) e.m1Roll = 'Required';
+          if (!form.m2Name.trim()) e.m2Name = 'Required';
+          if (!form.m2Roll.trim()) e.m2Roll = 'Required';
+          if (!form.experience) e.experience = 'Please select one';
+          setErrors(e);
+          return Object.keys(e).length === 0;
+        };
+
+        const handleSubmit = (ev) => {
+          ev.preventDefault();
+          if (validate()) {
+            setDone(true);
+            setTimeout(() => window.open('https://forms.gle/BJyMCNf8fPJxYeeB9', '_blank'), 600);
+          }
+        };
+
+        if (done) return (
+          <section id="register" className="py-20 px-4 bg-[#080C11] border-t border-[#1E3A5F]">
+            <div className="max-w-md mx-auto text-center cyber-card p-8">
+              <div className="w-14 h-14 rounded-full bg-[#29ABE2]/10 border-2 border-[#29ABE2] flex items-center justify-center text-2xl text-[#29ABE2] mx-auto mb-4">✓</div>
+              <h3 className="font-heading font-extrabold text-2xl mb-2">Registration Saved!</h3>
+              <p className="text-sm text-[#94A3B8] mb-6">Redirecting to Google Form for payment screenshot upload...</p>
+              <a href="https://forms.gle/BJyMCNf8fPJxYeeB9" target="_blank" className="btn-launch w-full text-xs py-3">Open Form Directly →</a>
             </div>
+          </section>
+        );
 
-            <hr className="divider" />
-            <div style={{background:'rgba(41,171,226,0.07)',border:'1px solid rgba(41,171,226,0.2)',borderRadius:6,padding:'14px 18px',marginBottom:22}}>
-              <div style={{fontFamily:'Space Grotesk',fontWeight:700,fontSize:12,color:'#29ABE2',marginBottom:5,textTransform:'uppercase',letterSpacing:'0.1em'}}>Step 2 — Payment ₹120</div>
-              <p style={{fontSize:12,color:'#7A90A8',margin:0,lineHeight:1.7}}>After submitting, you'll be redirected to the Google Form to upload your UPI payment screenshot. Keep it ready before proceeding.</p>
+        return (
+          <section id="register" className="py-16 px-4 bg-[#080C11] border-t border-[#1E3A5F]">
+            <div className="max-w-2xl mx-auto">
+              <div className="text-center mb-10">
+                <div className="font-heading text-xs font-semibold text-[#29ABE2] uppercase tracking-widest mb-1">Registration</div>
+                <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-white tracking-tight mb-2">Register Your <span className="text-[#29ABE2]">Team</span></h2>
+                <p className="text-xs sm:text-sm text-[#94A3B8]">Registration Fee: ₹120 / Team · Pay via UPI and upload screenshot in step 2</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="cyber-card p-5 sm:p-8 space-y-6">
+                <div>
+                  <div className="font-heading text-xs font-bold text-[#29ABE2] uppercase tracking-wider mb-3">1. Team Information</div>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs text-[#94A3B8] mb-1">Team Name <span className="text-[#29ABE2]">*</span></label>
+                      <input type="text" className="mobile-input" placeholder="e.g. AeroWolves" value={form.teamName} onChange={e => set('teamName', e.target.value)} />
+                      {errors.teamName && <p className="text-red-400 text-xs mt-1">{errors.teamName}</p>}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-[#94A3B8] mb-1">Leader Name <span className="text-[#29ABE2]">*</span></label>
+                        <input type="text" className="mobile-input" placeholder="Full Name" value={form.teamLeader} onChange={e => set('teamLeader', e.target.value)} />
+                        {errors.teamLeader && <p className="text-red-400 text-xs mt-1">{errors.teamLeader}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-xs text-[#94A3B8] mb-1">Leader Roll No <span className="text-[#29ABE2]">*</span></label>
+                        <input type="text" className="mobile-input" placeholder="e.g. 2024UCS001" value={form.leaderRoll} onChange={e => set('leaderRoll', e.target.value)} />
+                        {errors.leaderRoll && <p className="text-red-400 text-xs mt-1">{errors.leaderRoll}</p>}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#94A3B8] mb-1">Leader Mobile No <span className="text-[#29ABE2]">*</span></label>
+                      <input type="tel" className="mobile-input" placeholder="10-digit Mobile Number" value={form.leaderPhone} onChange={e => set('leaderPhone', e.target.value)} />
+                      {errors.leaderPhone && <p className="text-red-400 text-xs mt-1">{errors.leaderPhone}</p>}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="font-heading text-xs font-bold text-[#29ABE2] uppercase tracking-wider mb-3">2. Team Members</div>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#0A0F16] p-3 rounded-lg border border-[#1E3A5F]">
+                      <input type="text" className="mobile-input" placeholder="Member 1 Name *" value={form.m1Name} onChange={e => set('m1Name', e.target.value)} />
+                      <input type="text" className="mobile-input" placeholder="Member 1 Roll No *" value={form.m1Roll} onChange={e => set('m1Roll', e.target.value)} />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#0A0F16] p-3 rounded-lg border border-[#1E3A5F]">
+                      <input type="text" className="mobile-input" placeholder="Member 2 Name *" value={form.m2Name} onChange={e => set('m2Name', e.target.value)} />
+                      <input type="text" className="mobile-input" placeholder="Member 2 Roll No *" value={form.m2Roll} onChange={e => set('m2Roll', e.target.value)} />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#0A0F16] p-3 rounded-lg border border-[#1E3A5F]">
+                      <input type="text" className="mobile-input" placeholder="Member 3 Name (optional)" value={form.m3Name} onChange={e => set('m3Name', e.target.value)} />
+                      <input type="text" className="mobile-input" placeholder="Member 3 Roll No (optional)" value={form.m3Roll} onChange={e => set('m3Roll', e.target.value)} />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="font-heading text-xs font-bold text-[#29ABE2] uppercase tracking-wider mb-3">3. Rocketry Experience & Motivation</div>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs text-[#94A3B8] mb-1">Prior rocketry / aero experience? <span className="text-[#29ABE2]">*</span></label>
+                      <div className="flex gap-6 mt-1">
+                        {['Yes', 'No'].map(o => (
+                          <label key={o} className="flex items-center gap-2 text-xs cursor-pointer">
+                            <input type="radio" name="exp" value={o} checked={form.experience === o} onChange={() => set('experience', o)} className="accent-[#29ABE2]" />
+                            <span>{o}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {errors.experience && <p className="text-red-400 text-xs mt-1">{errors.experience}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#94A3B8] mb-1">Primary motivation</label>
+                      <select className="mobile-input" value={form.motivation} onChange={e => set('motivation', e.target.value)}>
+                        <option value="">Select motivation</option>
+                        <option>Learn aerodynamics & propulsion</option>
+                        <option>Hands-on fabrication</option>
+                        <option>Compete for prizes</option>
+                        <option>Team building / fun</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-lg bg-[#29ABE2]/10 border border-[#29ABE2]/30 text-xs text-[#94A3B8]">
+                  <span className="font-bold text-[#29ABE2] block mb-0.5 uppercase">Step 2 — Payment ₹120</span>
+                  After clicking submit, you'll upload your payment screenshot on the Google Form.
+                </div>
+
+                <button type="submit" className="btn-launch w-full py-3.5 text-sm font-extrabold">Submit Registration →</button>
+              </form>
             </div>
+          </section>
+        );
+      }
 
-            <button type="submit" className="btn" style={{width:'100%',fontSize:15,padding:'15px'}}>
-              Submit Registration →
-            </button>
+      function FloatingMobileCTA() {
+        const [vis, setVis] = useState(false);
+        useEffect(() => {
+          const h = () => setVis(window.scrollY > 250);
+          window.addEventListener('scroll', h);
+          return () => window.removeEventListener('scroll', h);
+        }, []);
+        if (!vis) return null;
+        return (
+          <div className="md:hidden fixed bottom-3 left-3 right-3 z-40">
+            <div className="bg-[#0D1117]/95 border border-[#1E3A5F] p-3 rounded-xl shadow-2xl flex items-center justify-between gap-3">
+              <div>
+                <div className="font-heading font-extrabold text-xs text-white">THRUST <span className="text-[#29ABE2]">5.0</span></div>
+                <div className="text-[10px] text-[#29ABE2] font-semibold">₹120 / Team</div>
+              </div>
+              <a href="#register" className="btn-launch px-4 py-2 text-xs font-bold">Register Now</a>
+            </div>
           </div>
-        </motion.form>
-      </div>
-    </section>
-  );
-}
+        );
+      }
 
-function Footer() {
-  return (
-    <footer style={{background:'#080C11',borderTop:'1px solid #1E3A5F',padding:'52px 24px 28px'}}>
-      <div style={{maxWidth:1100,margin:'0 auto'}}>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(210px,1fr))',gap:32,marginBottom:36}}>
+      function Footer() {
+        return (
+          <footer className="bg-[#080C11] border-t border-[#1E3A5F] py-8 px-4 text-center sm:text-left">
+            <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-[#64748B]">
+              <div>
+                <div className="font-heading font-extrabold text-sm text-white mb-1">THRUST <span className="text-[#29ABE2]">5.0</span></div>
+                <div>Aero Fabrication Club · IIITDMJ</div>
+              </div>
+              <div>© 2025 Aero Fabrication Club, IIITDMJ</div>
+            </div>
+          </footer>
+        );
+      }
+
+      function App() {
+        return (
           <div>
-            <div style={{fontFamily:'Space Grotesk',fontWeight:800,fontSize:20,marginBottom:10}}>
-              <span style={{color:'#29ABE2'}}>THRUST</span> 5.0
-            </div>
-            <p style={{color:'#3D5066',fontSize:13,lineHeight:1.75,margin:0}}>The flagship water rocket competition by Aero Fabrication Club. Building the next generation of aerospace engineers.</p>
+            <Navbar />
+            <Hero />
+            <EventDetails />
+            <RegistrationForm />
+            <Footer />
+            <FloatingMobileCTA />
           </div>
-          <div>
-            <div className="slabel" style={{marginBottom:10}}>Organised By</div>
-            <div style={{fontFamily:'Space Grotesk',fontWeight:700,fontSize:15,marginBottom:4}}>Aero Fabrication Club</div>
-            <div style={{color:'#3D5066',fontSize:13}}>IIIT Jabalpur · IIITDMJ</div>
-          </div>
-          <div>
-            <div className="slabel" style={{marginBottom:10}}>Contact</div>
-            <div style={{color:'#7A90A8',fontSize:13,lineHeight:2}}>
-              <div>Reach out via AFC official channels</div>
-              <a href="https://forms.gle/BJyMCNf8fPJxYeeB9" target="_blank" style={{color:'#29ABE2',textDecoration:'none',fontSize:13,display:'block',marginTop:6}}>→ Direct Registration Form</a>
-            </div>
-          </div>
-        </div>
-        <div style={{borderTop:'1px solid #1E3A5F',paddingTop:18,display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:8}}>
-          <div style={{color:'#2A3A4F',fontSize:12}}>© 2025 Aero Fabrication Club, IIITDMJ</div>
-          <div style={{color:'#2A3A4F',fontSize:12}}>Thrust 5.0 — Water Rocket Competition</div>
-        </div>
-      </div>
-    </footer>
-  );
-}
+        );
+      }
 
-function App() {
-  return (<><Nav /><Hero /><Details /><RegistrationForm /><Footer /></>);
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-</script>
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    }
+  </script>
 </body>
 </html>
