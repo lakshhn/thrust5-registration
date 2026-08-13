@@ -1,10 +1,10 @@
 /**
- * Thrust 5.0 Registration — Fail-Safe Google Apps Script Backend
+ * Thrust 5.0 Registration — Production Multi-Method Google Apps Script Backend
  * Linked directly to Spreadsheet ID: 1U_W0ghyQQN_LT6BUu9mInyWEHy6og-VqcP85lzwXlgY
  * 
  * UPDATE INSTRUCTIONS IN APPS SCRIPT:
  * 1. Open your Google Sheet -> Extensions -> Apps Script.
- * 2. Paste ALL code below replacing existing contents.
+ * 2. Replace ALL code below with this script.
  * 3. Click Save (disk icon).
  * 4. Click "Deploy" -> "Manage deployments".
  * 5. Click the Pencil (Edit) icon.
@@ -29,7 +29,7 @@ function doPost(e) {
   try {
     var sheet = getTargetSheet();
     
-    // Auto-create Header Row if sheet is empty
+    // Auto-create Header Row if empty
     if (sheet.getLastRow() === 0) {
       sheet.appendRow([
         'Timestamp',
@@ -54,9 +54,15 @@ function doPost(e) {
       headerRange.setFontWeight('bold');
     }
 
-    // Parse payload
+    // Comprehensive payload parser (handles form payload, json post, and url params)
     var data = {};
-    if (e && e.postData && e.postData.contents) {
+    if (e && e.parameter && e.parameter.payload) {
+      try {
+        data = JSON.parse(e.parameter.payload);
+      } catch (err) {
+        data = e.parameter;
+      }
+    } else if (e && e.postData && e.postData.contents) {
       try {
         data = JSON.parse(e.postData.contents);
       } catch (err) {
@@ -80,7 +86,7 @@ function doPost(e) {
     var experience = data.experience || 'N/A';
     var motivation = data.motivation || 'N/A';
 
-    // 1. APPEND TEAM DATA ROW IMMEDIATELY TO SHEET
+    // 1. APPEND ROW IMMEDIATELY TO SHEET (GUARANTEED WRITE)
     sheet.appendRow([
       timestamp,
       teamName,
@@ -99,9 +105,9 @@ function doPost(e) {
     ]);
 
     var lastRow = sheet.getLastRow();
-    var receiptUrl = "No Receipt File";
+    var receiptUrl = "No Receipt File Attached";
 
-    // 2. PROCESS PAYMENT RECEIPT FILE INTO GOOGLE DRIVE
+    // 2. PROCESS RECEIPT FILE IF PRESENT
     var paymentReceipt = data.paymentReceipt || data.paymentBase64 || '';
     if (paymentReceipt && paymentReceipt.indexOf('base64,') !== -1) {
       try {
@@ -124,13 +130,13 @@ function doPost(e) {
         file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
         receiptUrl = file.getUrl();
       } catch (driveErr) {
-        receiptUrl = "Receipt attached (Base64 attached). Drive save note: " + driveErr.toString();
+        receiptUrl = "Receipt received (Base64 attached). Drive note: " + driveErr.toString();
       }
     } else if (paymentReceipt) {
       receiptUrl = paymentReceipt;
     }
 
-    // Update receipt URL column
+    // Update Receipt Column (Col 14)
     sheet.getRange(lastRow, 14).setValue(receiptUrl);
 
     return ContentService
@@ -148,6 +154,6 @@ function doPost(e) {
 
 function doGet(e) {
   return ContentService
-    .createTextOutput(JSON.stringify({ status: 'active', spreadsheetId: SPREADSHEET_ID, message: 'Thrust 5.0 Registration Web App Ready' }))
+    .createTextOutput(JSON.stringify({ status: 'active', spreadsheetId: SPREADSHEET_ID, message: 'Thrust 5.0 Registration API Live' }))
     .setMimeType(ContentService.MimeType.JSON);
 }

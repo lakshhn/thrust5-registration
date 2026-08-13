@@ -176,13 +176,48 @@ export default function RegistrationForm() {
 
     try {
       if (targetUrl) {
-        // Send as text/plain to bypass browser CORS preflight OPTIONS check for Google Apps Script
-        await fetch(targetUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
+        const payloadString = JSON.stringify(payload);
+
+        // 1. Primary: Fetch POST (mode: no-cors)
+        try {
+          fetch(targetUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: payloadString
+          });
+        } catch (fetchErr) {
+          console.warn('Fetch submission notice:', fetchErr);
+        }
+
+        // 2. Secondary Guarantee: Hidden HTML Form Submit to Hidden Iframe (Bypasses all CORS & adblock rules!)
+        const iframeName = 'thrust5_submit_iframe';
+        let iframe = document.getElementById(iframeName);
+        if (!iframe) {
+          iframe = document.createElement('iframe');
+          iframe.name = iframeName;
+          iframe.id = iframeName;
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+        }
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = targetUrl;
+        form.target = iframeName;
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'payload';
+        input.value = payloadString;
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+
+        setTimeout(() => {
+          if (form.parentNode) form.parentNode.removeChild(form);
+        }, 1500);
       }
 
       // Save locally as backup
