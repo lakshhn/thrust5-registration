@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-// Replace with your deployed Google Apps Script Web App URL
 const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
 
 export default function RegistrationForm() {
@@ -16,8 +15,6 @@ export default function RegistrationForm() {
     m2Roll: '',
     m3Name: '',
     m3Roll: '',
-    experience: '',
-    motivation: '',
   });
 
   const [receiptFile, setReceiptFile] = useState(null);
@@ -44,7 +41,7 @@ export default function RegistrationForm() {
     }
   };
 
-  // Handle File Selection with Auto-Compression for Instant Upload
+  // Handle File Selection with Auto-Compression
   const handleFileChange = (file) => {
     if (!file) return;
 
@@ -150,7 +147,6 @@ export default function RegistrationForm() {
     if (!formData.m2Name.trim()) newErrors.m2Name = 'Member 2 Name is required';
     if (!formData.m2Roll.trim()) newErrors.m2Roll = 'Member 2 Roll Number is required';
 
-    if (!formData.experience) newErrors.experience = 'Please select an option';
     if (!receiptFile) newErrors.receipt = 'Payment screenshot or PDF receipt is required';
 
     setErrors(newErrors);
@@ -178,7 +174,7 @@ export default function RegistrationForm() {
       if (targetUrl) {
         const payloadString = JSON.stringify(payload);
 
-        // 1. Primary: Fetch POST (mode: no-cors)
+        // 1. Primary Fetch POST
         try {
           fetch(targetUrl, {
             method: 'POST',
@@ -190,7 +186,7 @@ export default function RegistrationForm() {
           console.warn('Fetch submission notice:', fetchErr);
         }
 
-        // 2. Secondary Guarantee: Hidden HTML Form Submit to Hidden Iframe (Bypasses all CORS & adblock rules!)
+        // 2. Dual-Transmission Hidden Form POST to Hidden Iframe
         const iframeName = 'thrust5_submit_iframe';
         let iframe = document.getElementById(iframeName);
         if (!iframe) {
@@ -236,64 +232,109 @@ export default function RegistrationForm() {
     }
   };
 
-  // SUCCESS SCREEN (No redirect!)
+  // PREMIUM REGISTRATION SUCCESS BADGE / PASS
   if (submittedData) {
     return (
-      <section id="register" className="py-20 px-4 sm:px-6 bg-[#080C11] border-t border-[#1E3A5F]">
+      <section id="register" className="py-16 sm:py-24 px-4 sm:px-6 bg-[#080C11] border-t border-[#1E3A5F]">
         <div className="max-w-xl mx-auto">
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="cyber-card p-6 sm:p-8 text-center"
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, type: 'spring', damping: 20 }}
+            className="cyber-card p-6 sm:p-8 text-center relative overflow-hidden"
           >
-            <div className="w-16 h-16 rounded-full bg-[#29ABE2]/10 border-2 border-[#29ABE2] flex items-center justify-center text-3xl text-[#29ABE2] mx-auto mb-4">
-              🚀
+            {/* Ambient Background Glow */}
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#29ABE2]/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-[#1E6FBA]/20 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Launch Rocket Animation Icon */}
+            <motion.div
+              initial={{ scale: 0, rotate: -45 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.2, type: 'spring' }}
+              className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1E6FBA] to-[#29ABE2] p-0.5 mx-auto mb-5 shadow-lg shadow-[#29ABE2]/20"
+            >
+              <div className="w-full h-full bg-[#0D1117] rounded-[14px] flex items-center justify-center text-4xl">
+                🚀
+              </div>
+            </motion.div>
+
+            {/* Status Pill */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold uppercase tracking-wider mb-3">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              Registration Confirmed & Verified
             </div>
-            <div className="font-mono text-xs font-bold text-[#29ABE2] uppercase tracking-widest mb-1">
-              Registration Confirmed
-            </div>
-            <h3 className="font-heading font-extrabold text-2xl sm:text-3xl text-white mb-2">
-              Team Registered!
+
+            <h3 className="font-heading font-extrabold text-2xl sm:text-4xl text-white tracking-tight mb-2">
+              Ready for <span className="text-[#29ABE2]">Blast Off!</span>
             </h3>
-            <p className="text-xs sm:text-sm text-[#94A3B8] mb-6">
-              Your details and payment receipt have been saved directly to the Aero Fabrication Club competition sheet.
+            <p className="text-xs sm:text-sm text-[#94A3B8] max-w-md mx-auto mb-6">
+              Congratulations! Your team registration and payment proof have been officially logged in the Aero Fabrication Club competition sheet.
             </p>
 
-            {/* Registration Summary Card */}
-            <div className="bg-[#0A0F16] border border-[#1E3A5F] rounded-lg p-4 text-left space-y-2 mb-6">
-              <div className="flex justify-between items-center border-b border-[#1E3A5F] pb-2">
-                <span className="text-xs text-[#64748B]">Registration ID:</span>
-                <span className="font-mono font-bold text-sm text-[#29ABE2]">{regId}</span>
+            {/* High-Impact Official Competition Pass */}
+            <div className="bg-[#0A0F16] border-2 border-[#1E3A5F] rounded-xl p-5 text-left relative overflow-hidden space-y-3 mb-6 shadow-inner">
+              <div className="flex justify-between items-center border-b border-[#1E3A5F] pb-3">
+                <div>
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Official Entry Ticket</div>
+                  <div className="font-heading font-bold text-lg text-white">{submittedData.teamName}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Pass ID</div>
+                  <div className="font-mono font-bold text-sm text-[#29ABE2] bg-[#29ABE2]/10 px-2 py-0.5 rounded border border-[#29ABE2]/30">
+                    {regId}
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-[#64748B]">Team Name:</span>
-                <span className="font-bold text-xs text-white">{submittedData.teamName}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-[#64748B]">Team Leader:</span>
-                <span className="text-xs text-white">{submittedData.teamLeader} ({submittedData.leaderRoll})</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-[#64748B]">Payment Proof:</span>
-                <span className="text-xs text-green-400 font-semibold">✓ Uploaded ({receiptFile?.name || 'File Attached'})</span>
+
+              <div className="grid grid-cols-2 gap-3 text-xs pt-1">
+                <div>
+                  <span className="text-[#64748B] block text-[10px] uppercase font-mono">Team Leader</span>
+                  <span className="font-semibold text-white">{submittedData.teamLeader}</span>
+                  <span className="text-[11px] text-[#94A3B8] block">({submittedData.leaderRoll})</span>
+                </div>
+                <div>
+                  <span className="text-[#64748B] block text-[10px] uppercase font-mono">Leader Phone</span>
+                  <span className="font-mono text-white">{submittedData.leaderPhone}</span>
+                </div>
+                <div>
+                  <span className="text-[#64748B] block text-[10px] uppercase font-mono">Teammates</span>
+                  <span className="text-white font-medium">
+                    {submittedData.m1Name}, {submittedData.m2Name}
+                    {submittedData.m3Name ? `, ${submittedData.m3Name}` : ''}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[#64748B] block text-[10px] uppercase font-mono">Payment Status</span>
+                  <span className="text-emerald-400 font-bold flex items-center gap-1">
+                    ✓ ₹120 Verified
+                  </span>
+                </div>
               </div>
             </div>
 
-            <button
-              onClick={() => {
-                setSubmittedData(null);
-                setFormData({
-                  teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',
-                  m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: '',
-                  experience: '', motivation: ''
-                });
-                removeFile();
-              }}
-              className="px-6 py-3 rounded-lg border border-[#1E3A5F] text-[#94A3B8] hover:text-white font-heading font-bold text-xs uppercase tracking-wider"
-            >
-              Register Another Team
-            </button>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => window.print()}
+                className="flex-1 py-3 px-4 rounded-lg bg-[#1E3A5F]/40 border border-[#29ABE2]/40 hover:bg-[#1E3A5F] text-white font-heading font-bold text-xs uppercase tracking-wider transition-all"
+              >
+                📥 Save / Print Ticket
+              </button>
+              <button
+                onClick={() => {
+                  setSubmittedData(null);
+                  setFormData({
+                    teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',
+                    m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: ''
+                  });
+                  removeFile();
+                }}
+                className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-[#1E6FBA] to-[#29ABE2] hover:opacity-95 text-white font-heading font-extrabold text-xs uppercase tracking-wider transition-all shadow-md"
+              >
+                🚀 Register Another Team
+              </button>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -320,35 +361,6 @@ export default function RegistrationForm() {
           <p className="text-xs sm:text-sm text-[#94A3B8]">
             Complete form & upload payment receipt. Data is automatically recorded in your team's row.
           </p>
-
-          {/* Optional Google Sheet Link Config Toggle */}
-          <button
-            onClick={() => setShowConfig(!showConfig)}
-            className="mt-3 text-[11px] text-[#64748B] hover:text-[#29ABE2] underline inline-block"
-          >
-            {showConfig ? 'Hide Sheet Web App Settings' : '⚙️ Configure Google Sheet Backend URL'}
-          </button>
-
-          {showConfig && (
-            <div className="mt-3 p-3 bg-[#111827] border border-[#1E3A5F] rounded-lg max-w-lg mx-auto text-left">
-              <label className="block text-[11px] font-bold text-[#29ABE2] mb-1">
-                Google Apps Script Web App URL:
-              </label>
-              <input
-                type="text"
-                className="mobile-input text-xs"
-                placeholder="https://script.google.com/macros/s/.../exec"
-                value={scriptUrl}
-                onChange={(e) => {
-                  setScriptUrl(e.target.value);
-                  localStorage.setItem('thrust5_script_url', e.target.value);
-                }}
-              />
-              <p className="text-[10px] text-[#64748B] mt-1">
-                Deploy `google-apps-script.gs` as a Web App (Access: Anyone) and paste the URL here to connect your live sheet.
-              </p>
-            </div>
-          )}
         </motion.div>
 
         {/* Form Container */}
@@ -513,57 +525,10 @@ export default function RegistrationForm() {
             </div>
           </div>
 
-          {/* Section 3: Rocketry Experience & Motivation */}
-          <div className="space-y-4">
-            <div className="font-heading font-bold text-xs text-[#29ABE2] tracking-wider uppercase border-b border-[#1E3A5F] pb-2">
-              3. Rocketry Experience & Motivation
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-[#94A3B8] mb-2">
-                Prior experience with model rocketry or aeronautics? <span className="text-[#29ABE2]">*</span>
-              </label>
-              <div className="flex gap-6">
-                {['Yes', 'No'].map((opt) => (
-                  <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm text-white">
-                    <input
-                      type="radio"
-                      name="experience"
-                      value={opt}
-                      checked={formData.experience === opt}
-                      onChange={() => updateField('experience', opt)}
-                      className="w-4 h-4 accent-[#29ABE2]"
-                    />
-                    <span>{opt}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.experience && <p className="text-red-400 text-xs mt-1">{errors.experience}</p>}
-            </div>
-
-            <div>
-              <label htmlFor="motivation" className="block text-xs font-semibold text-[#94A3B8] mb-1.5">
-                Primary motivation for participating
-              </label>
-              <select
-                id="motivation"
-                className="mobile-input"
-                value={formData.motivation}
-                onChange={(e) => updateField('motivation', e.target.value)}
-              >
-                <option value="">Select primary motivation</option>
-                <option value="aerodynamics">To learn about aerodynamics & propulsion</option>
-                <option value="fabrication">To gain hands-on fabrication experience</option>
-                <option value="competition">To compete for prizes & glory</option>
-                <option value="fun">Just for fun / team building</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Section 4: Direct Payment Proof Upload (No Google Form Redirect!) */}
+          {/* Section 3: Direct Payment Proof Upload */}
           <div className="space-y-4">
             <div className="font-heading font-bold text-xs text-[#29ABE2] tracking-wider uppercase border-b border-[#1E3A5F] pb-2 flex justify-between items-center">
-              <span>4. Upload Payment Proof (₹120)</span>
+              <span>3. Upload Payment Proof (₹120)</span>
               <span className="text-[10px] text-[#29ABE2]">PNG, JPG, WEBP, PDF</span>
             </div>
 
@@ -577,7 +542,7 @@ export default function RegistrationForm() {
               className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${dragActive
                 ? 'border-[#29ABE2] bg-[#29ABE2]/10'
                 : receiptFile
-                  ? 'border-green-500/50 bg-[#0A0F16]'
+                  ? 'border-emerald-500/50 bg-[#0A0F16]'
                   : 'border-[#1E3A5F] hover:border-[#29ABE2]/60 bg-[#0A0F16]'
                 }`}
             >
@@ -606,8 +571,8 @@ export default function RegistrationForm() {
                     <div className="font-bold text-xs text-white truncate max-w-xs mx-auto">
                       {receiptFile.name}
                     </div>
-                    <div className="text-[11px] text-[#64748B]">
-                      {(receiptFile.size / 1024).toFixed(1)} KB · Click to change file
+                    <div className="text-[11px] text-emerald-400 font-semibold mt-0.5">
+                      ✓ Receipt Attached (Click to change)
                     </div>
                   </div>
                   <button
@@ -630,7 +595,7 @@ export default function RegistrationForm() {
                     Drag & Drop UPI Payment Receipt Here
                   </div>
                   <div className="text-[11px] text-[#64748B]">
-                    or <span className="text-[#29ABE2] underline">Browse file from device</span> (Max 8MB)
+                    or <span className="text-[#29ABE2] underline">Browse file from device</span> (Max 12MB)
                   </div>
                 </div>
               )}

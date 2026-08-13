@@ -265,13 +265,11 @@
           if (!form.teamName.trim()) e.teamName = 'Required';
           if (!form.teamLeader.trim()) e.teamLeader = 'Required';
           if (!form.leaderRoll.trim()) e.leaderRoll = 'Required';
-          if (!form.leaderPhone.trim()) e.leaderPhone = 'Required';
           else if (!/^\d{10}$/.test(form.leaderPhone.replace(/\s/g, ''))) e.leaderPhone = 'Enter valid 10-digit number';
           if (!form.m1Name.trim()) e.m1Name = 'Required';
           if (!form.m1Roll.trim()) e.m1Roll = 'Required';
           if (!form.m2Name.trim()) e.m2Name = 'Required';
           if (!form.m2Roll.trim()) e.m2Roll = 'Required';
-          if (!form.experience) e.experience = 'Please select one';
           if (!file) e.file = 'Payment receipt file is required';
           setErrors(e);
           return Object.keys(e).length === 0;
@@ -323,17 +321,56 @@
 
         if (submittedData) return (
           <section id="register" className="py-20 px-4 bg-[#080C11] border-t border-[#1E3A5F]">
-            <div className="max-w-md mx-auto text-center cyber-card p-8 space-y-4">
-              <div className="w-14 h-14 rounded-full bg-[#29ABE2]/10 border-2 border-[#29ABE2] flex items-center justify-center text-2xl text-[#29ABE2] mx-auto">🚀</div>
-              <h3 className="font-heading font-extrabold text-2xl">Registration Complete!</h3>
-              <p className="text-xs text-[#94A3B8]">Your team registration and payment proof have been saved directly to the competition database.</p>
-              <div className="bg-[#0A0F16] p-4 rounded-lg text-left text-xs border border-[#1E3A5F] space-y-2 font-mono">
-                <div className="text-[#29ABE2] font-bold">Registration ID: {submittedData.regId}</div>
-                <div>Team: {submittedData.teamName}</div>
-                <div>Leader: {submittedData.teamLeader}</div>
-                <div className="text-green-400">✓ Receipt Attached ({submittedData.fileName})</div>
+            <div className="max-w-xl mx-auto cyber-card p-8 text-center space-y-6 relative overflow-hidden">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1E6FBA] to-[#29ABE2] p-0.5 mx-auto shadow-lg shadow-[#29ABE2]/20">
+                <div className="w-full h-full bg-[#0D1117] rounded-[14px] flex items-center justify-center text-4xl">🚀</div>
               </div>
-              <button onClick={() => setSubmittedData(null)} className="btn-launch w-full text-xs py-3">Register Another Team</button>
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold uppercase tracking-wider mb-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  Registration Confirmed & Verified
+                </div>
+                <h3 className="font-heading font-extrabold text-3xl text-white tracking-tight">Ready for <span className="text-[#29ABE2]">Blast Off!</span></h3>
+                <p className="text-xs text-[#94A3B8] mt-1">Your team registration and payment proof have been officially logged in the Aero Fabrication Club competition sheet.</p>
+              </div>
+
+              <div className="bg-[#0A0F16] border-2 border-[#1E3A5F] rounded-xl p-5 text-left space-y-3 font-sans">
+                <div className="flex justify-between items-center border-b border-[#1E3A5F] pb-3">
+                  <div>
+                    <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Official Entry Ticket</div>
+                    <div className="font-heading font-bold text-lg text-white">{submittedData.teamName}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-mono uppercase tracking-widest text-[#64748B]">Pass ID</div>
+                    <div className="font-mono font-bold text-sm text-[#29ABE2] bg-[#29ABE2]/10 px-2 py-0.5 rounded border border-[#29ABE2]/30">{submittedData.regId}</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs pt-1">
+                  <div>
+                    <span className="text-[#64748B] block text-[10px] uppercase font-mono">Team Leader</span>
+                    <span className="font-semibold text-white">{submittedData.teamLeader}</span>
+                    <span className="text-[11px] text-[#94A3B8] block">({submittedData.leaderRoll})</span>
+                  </div>
+                  <div>
+                    <span className="text-[#64748B] block text-[10px] uppercase font-mono">Leader Phone</span>
+                    <span className="font-mono text-white">{submittedData.leaderPhone}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#64748B] block text-[10px] uppercase font-mono">Teammates</span>
+                    <span className="text-white font-medium">{submittedData.m1Name}, {submittedData.m2Name}{submittedData.m3Name ? `, ${submittedData.m3Name}` : ''}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#64748B] block text-[10px] uppercase font-mono">Payment Status</span>
+                    <span className="text-emerald-400 font-bold">✓ ₹120 Verified</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <button onClick={() => window.print()} className="flex-1 py-3 px-4 rounded-lg bg-[#1E3A5F]/40 border border-[#29ABE2]/40 hover:bg-[#1E3A5F] text-white font-heading font-bold text-xs uppercase tracking-wider">📥 Save / Print Ticket</button>
+                <button onClick={() => setSubmittedData(null)} className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-[#1E6FBA] to-[#29ABE2] text-white font-heading font-extrabold text-xs uppercase tracking-wider">🚀 Register Another Team</button>
+              </div>
             </div>
           </section>
         );
@@ -395,35 +432,7 @@
                 </div>
 
                 <div>
-                  <div className="font-heading text-xs font-bold text-[#29ABE2] uppercase tracking-wider mb-3">3. Rocketry Experience & Motivation</div>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-xs text-[#94A3B8] mb-1">Prior rocketry / aero experience? <span className="text-[#29ABE2]">*</span></label>
-                      <div className="flex gap-6 mt-1">
-                        {['Yes', 'No'].map(o => (
-                          <label key={o} className="flex items-center gap-2 text-xs cursor-pointer">
-                            <input type="radio" name="exp" value={o} checked={form.experience === o} onChange={() => set('experience', o)} className="accent-[#29ABE2]" />
-                            <span>{o}</span>
-                          </label>
-                        ))}
-                      </div>
-                      {errors.experience && <p className="text-red-400 text-xs mt-1">{errors.experience}</p>}
-                    </div>
-                    <div>
-                      <label className="block text-xs text-[#94A3B8] mb-1">Primary motivation</label>
-                      <select className="mobile-input" value={form.motivation} onChange={e => set('motivation', e.target.value)}>
-                        <option value="">Select motivation</option>
-                        <option>Learn aerodynamics & propulsion</option>
-                        <option>Hands-on fabrication</option>
-                        <option>Compete for prizes</option>
-                        <option>Team building / fun</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="font-heading text-xs font-bold text-[#29ABE2] uppercase tracking-wider mb-3">4. Upload Payment Receipt Proof (₹120)</div>
+                  <div className="font-heading text-xs font-bold text-[#29ABE2] uppercase tracking-wider mb-3">3. Upload Payment Receipt Proof (₹120)</div>
                   <div className="border-2 border-dashed border-[#1E3A5F] hover:border-[#29ABE2] rounded-xl p-5 text-center bg-[#0A0F16] relative cursor-pointer">
                     <input type="file" accept="image/*, application/pdf" className="absolute inset-0 opacity-0 cursor-pointer" onChange={e => e.target.files && handleFile(e.target.files[0])} />
                     {file ? (
@@ -436,7 +445,7 @@
                       <div>
                         <div className="text-2xl mb-1">📤</div>
                         <div className="font-bold text-xs text-white">Click or Drag Payment Screenshot (PNG/JPG/PDF)</div>
-                        <div className="text-[10px] text-[#64748B]">Max 8MB</div>
+                        <div className="text-[10px] text-[#64748B]">Max 12MB</div>
                       </div>
                     )}
                   </div>

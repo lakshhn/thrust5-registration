@@ -1,15 +1,6 @@
 /**
- * Thrust 5.0 Registration — Production Multi-Method Google Apps Script Backend
+ * Thrust 5.0 Registration — Updated Google Apps Script Backend (12 Columns)
  * Linked directly to Spreadsheet ID: 1U_W0ghyQQN_LT6BUu9mInyWEHy6og-VqcP85lzwXlgY
- * 
- * UPDATE INSTRUCTIONS IN APPS SCRIPT:
- * 1. Open your Google Sheet -> Extensions -> Apps Script.
- * 2. Replace ALL code below with this script.
- * 3. Click Save (disk icon).
- * 4. Click "Deploy" -> "Manage deployments".
- * 5. Click the Pencil (Edit) icon.
- * 6. Under "Version", select "New version".
- * 7. Click "Deploy".
  */
 
 var SPREADSHEET_ID = "1U_W0ghyQQN_LT6BUu9mInyWEHy6og-VqcP85lzwXlgY";
@@ -29,7 +20,7 @@ function doPost(e) {
   try {
     var sheet = getTargetSheet();
     
-    // Auto-create Header Row if empty
+    // Auto-create Header Row if sheet is empty
     if (sheet.getLastRow() === 0) {
       sheet.appendRow([
         'Timestamp',
@@ -43,18 +34,16 @@ function doPost(e) {
         'Member 2 Roll No',
         'Member 3 Name',
         'Member 3 Roll No',
-        'Rocketry Experience',
-        'Primary Motivation',
-        'Payment Receipt File / Image'
+        'Payment Receipt File / Image Link'
       ]);
       
-      var headerRange = sheet.getRange(1, 1, 1, 14);
+      var headerRange = sheet.getRange(1, 1, 1, 12);
       headerRange.setBackground('#0D1117');
       headerRange.setFontColor('#29ABE2');
       headerRange.setFontWeight('bold');
     }
 
-    // Comprehensive payload parser (handles form payload, json post, and url params)
+    // Parse payload
     var data = {};
     if (e && e.parameter && e.parameter.payload) {
       try {
@@ -83,10 +72,8 @@ function doPost(e) {
     var m2Roll = data.m2Roll || 'N/A';
     var m3Name = data.m3Name || '';
     var m3Roll = data.m3Roll || '';
-    var experience = data.experience || 'N/A';
-    var motivation = data.motivation || 'N/A';
 
-    // 1. APPEND ROW IMMEDIATELY TO SHEET (GUARANTEED WRITE)
+    // 1. APPEND 12-COLUMN ROW IMMEDIATELY TO SHEET
     sheet.appendRow([
       timestamp,
       teamName,
@@ -99,15 +86,13 @@ function doPost(e) {
       m2Roll,
       m3Name,
       m3Roll,
-      experience,
-      motivation,
       "Processing receipt..."
     ]);
 
     var lastRow = sheet.getLastRow();
     var receiptUrl = "No Receipt File Attached";
 
-    // 2. PROCESS RECEIPT FILE IF PRESENT
+    // 2. PROCESS PAYMENT RECEIPT FILE INTO GOOGLE DRIVE
     var paymentReceipt = data.paymentReceipt || data.paymentBase64 || '';
     if (paymentReceipt && paymentReceipt.indexOf('base64,') !== -1) {
       try {
@@ -136,8 +121,8 @@ function doPost(e) {
       receiptUrl = paymentReceipt;
     }
 
-    // Update Receipt Column (Col 14)
-    sheet.getRange(lastRow, 14).setValue(receiptUrl);
+    // Update Receipt Column (Col 12)
+    sheet.getRange(lastRow, 12).setValue(receiptUrl);
 
     return ContentService
       .createTextOutput(JSON.stringify({ result: 'success', row: lastRow, receiptUrl: receiptUrl }))
