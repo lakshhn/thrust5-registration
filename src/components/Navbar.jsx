@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AFC_LOGO_BASE64 } from '../assets/imageAssets';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -21,15 +22,15 @@ export default function Navbar() {
         }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-        {/* Brand Logo & Name - Official AFC Logo used directly as an image without changes */}
+        {/* Brand Logo & Name - Transparent AFC Logo with aero glow */}
         <a href="#" className="flex items-center gap-3 group">
           <img
-            src="/afc-user-logo.jpg"
+            src={AFC_LOGO_BASE64}
             alt="Aero Fabrication Club Logo"
-            className="h-10 sm:h-11 w-auto object-contain block"
+            className="h-9 sm:h-10 w-auto object-contain block drop-shadow-[0_0_12px_rgba(41,171,226,0.6)] transition-transform group-hover:scale-105 duration-300"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = '/afc-logo.png';
+              e.target.src = '/afc-logo-transparent.png';
             }}
           />
           <div>

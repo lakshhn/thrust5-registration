@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { AFC_LOGO_BASE64 } from '../assets/imageAssets';
 
 export default function RegistrationForm({ onSubmittedStateChange }) {
   const [formData, setFormData] = useState({
@@ -40,32 +41,64 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
     }
   };
 
-  const handleFileChange = (file) => {
-    if (!file) return;
+  // Compress image via Canvas API before base64 encoding
+  // Reduces typical 1-3MB phone screenshot to ~50-100KB — fits within GAS payload limits
+  const compressImage = (file) =>
+    new Promise((resolve) => {
+      if (file.type === 'application/pdf') {
+        const r = new FileReader();
+        r.onload = (e) => resolve(e.target.result);
+        r.readAsDataURL(file);
+        return;
+      }
+      const img = new Image();
+      const objUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        const MAX = 900;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.65));
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objUrl);
+        const r = new FileReader();
+        r.onload = (e) => resolve(e.target.result);
+        r.readAsDataURL(file);
+      };
+      img.src = objUrl;
+    });
 
+  const handleFileChange = async (file) => {
+    if (!file) return;
     if (file.size > 12 * 1024 * 1024) {
       setErrors((prev) => ({ ...prev, receipt: 'File size exceeds 12MB limit.' }));
       return;
     }
-
     setReceiptFile(file);
     setErrors((prev) => ({ ...prev, receipt: null }));
 
+    // Preview — use original quality for display
     if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => setReceiptPreview(e.target.result);
-      reader.readAsDataURL(file);
+      const previewReader = new FileReader();
+      previewReader.onload = (e) => setReceiptPreview(e.target.result);
+      previewReader.readAsDataURL(file);
     } else {
       setReceiptPreview(null);
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64Str = e.target.result.split(',')[1] || '';
-      setReceiptBase64(base64Str);
-    };
-    reader.readAsDataURL(file);
+    // Compress → store full data URI for GAS submission
+    const compressed = await compressImage(file);
+    setReceiptBase64(compressed);
   };
+
 
   const removeFile = () => {
     setReceiptFile(null);
@@ -140,8 +173,8 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
       m3Name: formData.m3Name.trim() || 'N/A',
       m3Roll: formData.m3Roll.trim() || 'N/A',
       fileName: receiptFile ? receiptFile.name : '',
-      fileMime: receiptFile ? receiptFile.type : '',
-      fileData: receiptBase64,
+      // Send full data URI (data:image/jpeg;base64,...) under the key GAS expects
+      paymentReceipt: receiptBase64,
     };
 
     const targetUrl = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
@@ -149,33 +182,14 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
     try {
       if (typeof window !== 'undefined') {
         const payloadString = JSON.stringify(payload);
-        const iframeName = 'hidden_submission_iframe';
-        let iframe = document.getElementById(iframeName);
-        if (!iframe) {
-          iframe = document.createElement('iframe');
-          iframe.name = iframeName;
-          iframe.id = iframeName;
-          iframe.style.display = 'none';
-          document.body.appendChild(iframe);
-        }
-
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = targetUrl;
-        form.target = iframeName;
-
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'payload';
-        input.value = payloadString;
-        form.appendChild(input);
-
-        document.body.appendChild(form);
-        form.submit();
-
-        setTimeout(() => {
-          if (form.parentNode) form.parentNode.removeChild(form);
-        }, 1200);
+        // Use fetch with no-cors to avoid CORS errors while still sending the full payload
+        // (no-cors doesn't return a readable response but the GAS still receives and processes it)
+        fetch(targetUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'payload=' + encodeURIComponent(payloadString),
+        }).catch(() => {}); // ignore CORS response error - GAS still processes it
       }
 
       const existing = JSON.parse(localStorage.getItem('thrust5_registrations') || '[]');
@@ -223,12 +237,12 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, type: 'spring' }}
-              src="/afc-user-logo.jpg"
+              src={AFC_LOGO_BASE64}
               alt="Aero Fabrication Club Logo"
               className="h-20 w-auto mx-auto mb-4 block object-contain"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = '/afc-logo.png';
+                e.target.src = '/afc-user-logo.jpg';
               }}
             />
 

@@ -3,51 +3,66 @@ import { motion } from 'framer-motion';
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[90vh] sm:min-h-screen flex items-center justify-center pt-20 pb-16 px-4 sm:px-6 overflow-hidden bg-[#0D1117]">
+    <section className="relative min-h-[90vh] sm:min-h-screen flex items-center justify-center pt-24 pb-16 px-4 sm:px-6 overflow-hidden bg-[#0D1117]">
       {/* Background Engineering Blueprint Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1E6FBA0E_1px,transparent_1px),linear-gradient(to_bottom,#1E6FBA0E_1px,transparent_1px)] bg-[size:32px_32px] sm:bg-[size:48px_48px] pointer-events-none" />
       
       {/* Dynamic Aero Glow Accent */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] sm:w-[700px] sm:h-[700px] bg-gradient-to-br from-[#29ABE2]/15 to-[#1E6FBA]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] sm:w-[700px] sm:h-[700px] bg-gradient-to-br from-[#29ABE2]/15 via-[#1E6FBA]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
-        {/* Official AFC Logo - Used exactly as provided without any changes */}
+      <div className="relative z-10 max-w-5xl mx-auto text-center">
+        {/* Flagship Club Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: -15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6 flex flex-col items-center justify-center gap-2"
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111827]/80 border border-[#29ABE2]/30 backdrop-blur-md mb-6 shadow-[0_0_15px_rgba(41,171,226,0.15)]"
         >
-          <img
-            src="/afc-user-logo.jpg"
-            alt="Aero Fabrication Club"
-            className="h-24 sm:h-28 w-auto object-contain block"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = '/afc-logo.png';
-            }}
-          />
+          <span className="w-2 h-2 rounded-full bg-[#29ABE2] animate-pulse" />
+          <span className="font-mono text-xs font-bold text-[#29ABE2] tracking-widest uppercase">
+            AERO FABRICATION CLUB · IIITDMJ PRESENTS
+          </span>
         </motion.div>
 
-        {/* Seamless Transparent Merged Title */}
+        {/* Google-Style Modern Tech Flagship Title */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative my-2 py-2 flex flex-col items-center justify-center"
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="relative my-4 flex flex-col items-center justify-center"
         >
-          <img
-            src="/thrust5-title-transparent.png"
-            alt="THRUST 5.0"
-            className="w-full max-w-2xl object-contain drop-shadow-[0_0_40px_rgba(41,171,226,0.6)] mix-blend-screen transition-transform hover:scale-105 duration-300"
-            onError={(e) => {
-              e.target.style.display = 'none';
+          {/* Main THRUST text */}
+          <div
+            className="title-glow text-white uppercase leading-none tracking-[0.08em] select-none"
+            style={{
+              fontFamily: "'Rajdhani', sans-serif",
+              fontWeight: 700,
+              fontSize: 'clamp(4rem, 14vw, 10rem)',
+              letterSpacing: '0.06em',
             }}
-          />
-          {/* HTML Title Fallback if image load fails */}
-          <h1 className="font-heading font-extrabold tracking-tight text-white text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.95] drop-shadow-[0_10px_30px_rgba(41,171,226,0.4)] hidden">
-            THRUST <span className="text-[#29ABE2]">5.0</span>
-          </h1>
+          >
+            THRUST
+          </div>
+
+          {/* 5.0 versioning — slightly smaller, cyan gradient, offset glow */}
+          <div
+            className="num-glow uppercase leading-none select-none -mt-2 sm:-mt-4"
+            style={{
+              fontFamily: "'Rajdhani', sans-serif",
+              fontWeight: 700,
+              fontSize: 'clamp(2.5rem, 9vw, 6.5rem)',
+              letterSpacing: '0.18em',
+              background: 'linear-gradient(135deg, #56CCF2 0%, #29ABE2 50%, #1E6FBA 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            5.0
+          </div>
+
+          {/* Accent line */}
+          <div className="w-40 sm:w-72 h-px bg-gradient-to-r from-transparent via-[#29ABE2] to-transparent mt-4 opacity-70 shadow-[0_0_10px_#29ABE2]" />
         </motion.div>
 
         {/* Subtitle */}
@@ -121,3 +136,4 @@ export default function Hero() {
     </section>
   );
 }
+

@@ -1,10 +1,27 @@
 /**
- * Thrust 5.0 Registration — Fail-Safe Google Apps Script Backend (12 Columns)
- * With Case-Insensitive Team Name Duplicate Protection
- * Linked directly to Spreadsheet ID: 1U_W0ghyQQN_LT6BUu9mInyWEHy6og-VqcP85lzwXlgY
+ * Thrust 5.0 Registration - Google Apps Script Backend
+ * 12 Columns | Case-Insensitive Duplicate Protection | Self-Healing Headers
+ * Spreadsheet: 1U_W0ghyQQN_LT6BUu9mInyWEHy6og-VqcP85lzwXlgY
  */
 
 var SPREADSHEET_ID = "1U_W0ghyQQN_LT6BUu9mInyWEHy6og-VqcP85lzwXlgY";
+
+var HEADERS = [
+  'Timestamp',
+  'Team Name',
+  'Leader Name',
+  'Leader Roll No',
+  'Leader Mobile No',
+  'Member 1 Name',
+  'Member 1 Roll No',
+  'Member 2 Name',
+  'Member 2 Roll No',
+  'Member 3 Name',
+  'Member 3 Roll No',
+  'Payment Receipt Link'
+];
+
+var COL_COUNT = HEADERS.length; // 12
 
 function getTargetSheet() {
   try {
@@ -14,50 +31,62 @@ function getTargetSheet() {
   }
 }
 
+function styleHeader(sheet) {
+  try {
+    var range = sheet.getRange(1, 1, 1, COL_COUNT);
+    range.setBackground('#0D1117');
+    range.setFontColor('#29ABE2');
+    range.setFontWeight('bold');
+    range.setFontSize(10);
+  } catch (e) {}
+}
+
+function ensureHeaders(sheet) {
+  var lastCol = sheet.getLastColumn();
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS);
+    styleHeader(sheet);
+    return;
+  }
+
+  var existingCols = Math.max(lastCol, 1);
+  var headerRow = sheet.getRange(1, 1, 1, existingCols).getValues()[0];
+
+  var hasReceiptCol = false;
+  for (var i = 0; i < headerRow.length; i++) {
+    var cell = (headerRow[i] || '').toString().toLowerCase();
+    if (cell.indexOf('receipt') !== -1 || cell.indexOf('payment') !== -1) {
+      hasReceiptCol = true;
+      break;
+    }
+  }
+
+  if (!hasReceiptCol) {
+    for (var c = existingCols + 1; c <= COL_COUNT; c++) {
+      sheet.getRange(1, c).setValue(HEADERS[c - 1]);
+    }
+    if (existingCols >= COL_COUNT) {
+      sheet.getRange(1, COL_COUNT).setValue(HEADERS[COL_COUNT - 1]);
+    }
+    styleHeader(sheet);
+  }
+}
+
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(15000);
 
   try {
     var sheet = getTargetSheet();
-    
-    // Auto-create Header Row if sheet is empty
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow([
-        'Timestamp',
-        'Team Name',
-        'Leader Name',
-        'Leader Roll No',
-        'Leader Mobile No',
-        'Member 1 Name',
-        'Member 1 Roll No',
-        'Member 2 Name',
-        'Member 2 Roll No',
-        'Member 3 Name',
-        'Member 3 Roll No',
-        'Payment Receipt File / Image Link'
-      ]);
-      
-      var headerRange = sheet.getRange(1, 1, 1, 12);
-      headerRange.setBackground('#0D1117');
-      headerRange.setFontColor('#29ABE2');
-      headerRange.setFontWeight('bold');
-    }
 
-    // Parse payload
+    ensureHeaders(sheet);
+
     var data = {};
     if (e && e.parameter && e.parameter.payload) {
-      try {
-        data = JSON.parse(e.parameter.payload);
-      } catch (err) {
-        data = e.parameter;
-      }
+      try { data = JSON.parse(e.parameter.payload); } catch (err) { data = e.parameter; }
     } else if (e && e.postData && e.postData.contents) {
-      try {
-        data = JSON.parse(e.postData.contents);
-      } catch (err) {
-        data = e.parameter || {};
-      }
+      try { data = JSON.parse(e.postData.contents); } catch (err) { data = e.parameter || {}; }
     } else if (e && e.parameter) {
       data = e.parameter;
     }
@@ -69,88 +98,106 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // --- DUPLICATE CHECK (Case-Insensitive for Team Name) ---
+    // Duplicate check (case-insensitive)
     var lastRow = sheet.getLastRow();
     if (lastRow > 1) {
       var existingTeams = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
-      var normalizedNewTeam = teamName.toLowerCase().replace(/[^a-z0-9]/g, '');
-      
+      var normalizedNew = teamName.toLowerCase().replace(/[^a-z0-9]/g, '');
       for (var i = 0; i < existingTeams.length; i++) {
-        var existingName = (existingTeams[i][0] || '').toString().trim();
-        var normalizedExisting = existingName.toLowerCase().replace(/[^a-z0-9]/g, '');
-        
-        if (normalizedExisting && normalizedExisting === normalizedNewTeam) {
+        var existing = (existingTeams[i][0] || '').toString().trim();
+        var normalizedExisting = existing.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (normalizedExisting && normalizedExisting === normalizedNew) {
           return ContentService
-            .createTextOutput(JSON.stringify({ 
-              result: 'duplicate', 
-              error: 'Team Name "' + teamName + '" is already registered! Please choose a unique team name.' 
+            .createTextOutput(JSON.stringify({
+              result: 'duplicate',
+              error: 'Team "' + teamName + '" is already registered! Choose a unique team name.'
             }))
             .setMimeType(ContentService.MimeType.JSON);
         }
       }
     }
 
-    var timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-    var teamLeader = data.teamLeader || 'N/A';
-    var leaderRoll = data.leaderRoll || 'N/A';
+    var timestamp   = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    var teamLeader  = data.teamLeader || 'N/A';
+    var leaderRoll  = data.leaderRoll  || 'N/A';
     var leaderPhone = "'" + (data.leaderPhone || '');
-    var m1Name = data.m1Name || 'N/A';
-    var m1Roll = data.m1Roll || 'N/A';
-    var m2Name = data.m2Name || 'N/A';
-    var m2Roll = data.m2Roll || 'N/A';
-    var m3Name = data.m3Name || '';
-    var m3Roll = data.m3Roll || '';
+    var m1Name      = data.m1Name || 'N/A';
+    var m1Roll      = data.m1Roll || 'N/A';
+    var m2Name      = data.m2Name || 'N/A';
+    var m2Roll      = data.m2Roll || 'N/A';
+    var m3Name      = data.m3Name || '-';
+    var m3Roll      = data.m3Roll || '-';
 
-    // 1. APPEND ROW ONCE (GUARANTEED WRITE)
+    // Append exactly 12 columns
     sheet.appendRow([
-      timestamp,
-      teamName,
-      teamLeader,
-      leaderRoll,
-      leaderPhone,
-      m1Name,
-      m1Roll,
-      m2Name,
-      m2Roll,
-      m3Name,
-      m3Roll,
-      "Processing receipt..."
+      timestamp,       // col 1
+      teamName,        // col 2
+      teamLeader,      // col 3
+      leaderRoll,      // col 4
+      leaderPhone,     // col 5
+      m1Name,          // col 6
+      m1Roll,          // col 7
+      m2Name,          // col 8
+      m2Roll,          // col 9
+      m3Name,          // col 10
+      m3Roll,          // col 11
+      'Processing...'  // col 12 - receipt placeholder
     ]);
 
     var newRow = sheet.getLastRow();
-    var receiptUrl = "No Receipt File Attached";
+    var receiptUrl = 'No Receipt Attached';
 
-    // 2. PROCESS PAYMENT RECEIPT FILE INTO GOOGLE DRIVE
-    var paymentReceipt = data.paymentReceipt || data.paymentBase64 || '';
-    if (paymentReceipt && paymentReceipt.indexOf('base64,') !== -1) {
-      try {
-        var folderName = "Thrust 5.0 Payment Receipts";
-        var folders = DriveApp.getFoldersByName(folderName);
-        var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
-        
-        var parts = paymentReceipt.split('base64,');
-        var contentType = parts[0].replace('data:', '').replace(';base64', '');
-        var decoded = Utilities.base64Decode(parts[1]);
-        
-        var ext = "png";
-        if (contentType.indexOf("jpeg") !== -1 || contentType.indexOf("jpg") !== -1) ext = "jpg";
-        else if (contentType.indexOf("pdf") !== -1) ext = "pdf";
-        
-        var fileName = teamName.replace(/[^a-zA-Z0-9]/g, '_') + "_Receipt_" + new Date().getTime() + "." + ext;
-        var blob = Utilities.newBlob(decoded, contentType, fileName);
-        
-        var file = folder.createFile(blob);
-        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-        receiptUrl = file.getUrl();
-      } catch (driveErr) {
-        receiptUrl = "Receipt attached. Drive note: " + driveErr.toString();
-      }
-    } else if (paymentReceipt) {
-      receiptUrl = paymentReceipt;
+    // Upload receipt to Google Drive
+    // Accept full data URI (data:image/jpeg;base64,...) OR raw base64 string
+    var paymentReceipt = data.paymentReceipt || data.paymentBase64 || data.fileData || '';
+
+    // If the receipt field is missing from parsed data but is in postData, try to extract it
+    if (!paymentReceipt && e && e.postData && e.postData.contents) {
+      var rawBody = e.postData.contents;
+      var prMatch = rawBody.match(/"paymentReceipt":"(data:[^"]+)"/);
+      if (prMatch) paymentReceipt = prMatch[1];
     }
 
-    // Update Receipt Cell (Col 12)
-    sheet.getRange(newRow, 12).setValue(receiptUrl);
+    if (paymentReceipt) {
+      var hasBase64 = paymentReceipt.indexOf('base64,') !== -1;
+      var isRawBase64 = !hasBase64 && paymentReceipt.length > 100;
+
+      // Normalize: if raw base64 without prefix, add JPEG prefix
+      if (isRawBase64) {
+        paymentReceipt = 'data:image/jpeg;base64,' + paymentReceipt;
+        hasBase64 = true;
+      }
+
+      if (hasBase64) {
+        try {
+          var folderName = 'Thrust 5.0 Payment Receipts';
+          var folders = DriveApp.getFoldersByName(folderName);
+          var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
+
+          var parts = paymentReceipt.split('base64,');
+          var contentType = parts[0].replace('data:', '').replace(';', '').trim();
+          if (!contentType) contentType = 'image/jpeg';
+          var decoded = Utilities.base64Decode(parts[1]);
+
+          var ext = 'jpg';
+          if (contentType.indexOf('png') !== -1) ext = 'png';
+          else if (contentType.indexOf('pdf') !== -1) ext = 'pdf';
+          else if (contentType.indexOf('webp') !== -1) ext = 'webp';
+
+          var fileName = teamName.replace(/[^a-zA-Z0-9]/g, '_') + '_Receipt_' + new Date().getTime() + '.' + ext;
+          var blob = Utilities.newBlob(decoded, contentType, fileName);
+
+          var file = folder.createFile(blob);
+          file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+          receiptUrl = file.getUrl();
+        } catch (driveErr) {
+          receiptUrl = 'Upload error: ' + driveErr.toString();
+        }
+      }
+    }
+
+    // Write receipt URL to column 12
+    sheet.getRange(newRow, COL_COUNT).setValue(receiptUrl);
 
     return ContentService
       .createTextOutput(JSON.stringify({ result: 'success', row: newRow, receiptUrl: receiptUrl }))
@@ -165,8 +212,33 @@ function doPost(e) {
   }
 }
 
+/**
+ * Run this ONCE manually to repair the sheet headers.
+ * Apps Script editor: Run > repairSheetHeaders
+ */
+function repairSheetHeaders() {
+  var sheet = getTargetSheet();
+  var lastCol = sheet.getLastColumn();
+  var lastRow = sheet.getLastRow();
+
+  Logger.log('Before repair: ' + lastCol + ' cols, ' + lastRow + ' rows');
+
+  for (var c = 1; c <= COL_COUNT; c++) {
+    sheet.getRange(1, c).setValue(HEADERS[c - 1]);
+  }
+  styleHeader(sheet);
+
+  Logger.log('Repaired: ' + COL_COUNT + ' column headers set.');
+  return 'Headers repaired successfully';
+}
+
 function doGet(e) {
   return ContentService
-    .createTextOutput(JSON.stringify({ status: 'active', spreadsheetId: SPREADSHEET_ID, message: 'Thrust 5.0 Registration API Live' }))
+    .createTextOutput(JSON.stringify({
+      status: 'active',
+      spreadsheetId: SPREADSHEET_ID,
+      columns: COL_COUNT,
+      message: 'Thrust 5.0 Registration API Live'
+    }))
     .setMimeType(ContentService.MimeType.JSON);
 }

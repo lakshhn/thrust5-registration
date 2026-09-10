@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -107,4 +107,45 @@ body {
 
 .btn-launch:active {
   transform: scale(0.98);
+}
+
+/* THRUST 5.0 glow pulse animation */
+@keyframes titleGlow {
+  0%, 100% {
+    text-shadow:
+      0 0 20px rgba(41, 171, 226, 0.7),
+      0 0 40px rgba(41, 171, 226, 0.4),
+      0 0 80px rgba(41, 171, 226, 0.15);
+  }
+  50% {
+    text-shadow:
+      0 0 30px rgba(41, 171, 226, 0.9),
+      0 0 60px rgba(41, 171, 226, 0.6),
+      0 0 110px rgba(86, 204, 242, 0.3),
+      0 0 160px rgba(30, 111, 186, 0.15);
+  }
+}
+
+.title-glow {
+  animation: titleGlow 3s ease-in-out infinite;
+}
+
+@keyframes numGlow {
+  0%, 100% {
+    text-shadow:
+      0 0 15px rgba(86, 204, 242, 0.8),
+      0 0 35px rgba(41, 171, 226, 0.5),
+      0 0 60px rgba(30, 111, 186, 0.25);
+  }
+  50% {
+    text-shadow:
+      0 0 25px rgba(86, 204, 242, 1),
+      0 0 55px rgba(41, 171, 226, 0.8),
+      0 0 90px rgba(30, 111, 186, 0.4),
+      0 0 120px rgba(41, 171, 226, 0.2);
+  }
+}
+
+.num-glow {
+  animation: numGlow 3s ease-in-out infinite 0.5s;
 }

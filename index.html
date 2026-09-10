@@ -9,7 +9,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -87,7 +87,20 @@
       border: 1px solid #1E3A5F;
       border-radius: 12px;
     }
-  </style>
+  
+    @keyframes titleGlow {
+      0%, 100% { text-shadow: 0 0 20px rgba(41,171,226,0.7), 0 0 40px rgba(41,171,226,0.4), 0 0 80px rgba(41,171,226,0.15); }
+      50% { text-shadow: 0 0 30px rgba(41,171,226,0.9), 0 0 60px rgba(41,171,226,0.6), 0 0 110px rgba(86,204,242,0.3); }
+    }
+    @keyframes numGlow {
+      0%, 100% { filter: drop-shadow(0 0 12px rgba(86,204,242,0.8)) drop-shadow(0 0 30px rgba(41,171,226,0.5)); }
+      50% { filter: drop-shadow(0 0 22px rgba(86,204,242,1)) drop-shadow(0 0 50px rgba(41,171,226,0.8)); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+</style>
 </head>
 <body class="bg-[#0D1117] text-white">
   <div id="root"></div>
@@ -121,7 +134,7 @@
           <header className={`fixed top-0 left-0 right-0 z-50 transition-all ${scrolled ? 'bg-[#0D1117]/95 border-b border-[#1E3A5F] py-2.5 shadow-lg' : 'bg-transparent py-4'}`}>
             <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
               <a href="#" className="flex items-center gap-3">
-                <img src="/afc-user-logo.jpg" alt="Aero Fabrication Club" className="h-10 w-auto object-contain block" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
+                <img src="/afc-logo-transparent.png" alt="AFC Logo" style={{height:'2.25rem',width:'auto',objectFit:'contain',filter:'drop-shadow(0 0 10px rgba(41,171,226,0.6))',display:'block'}} onError={(e)=>{e.target.onerror=null;e.target.src='/afc-user-logo.jpg'}} />
                 <div>
                   <div className="font-heading font-extrabold text-base tracking-wider text-white">THRUST <span className="text-[#29ABE2]">5.0</span></div>
                   <div className="text-[10px] font-mono text-[#29ABE2] uppercase font-bold tracking-widest">Aero Fabrication Club · IIITDMJ</div>
@@ -151,43 +164,93 @@
 
       function Hero() {
         return (
-          <section className="relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 px-4 text-center bg-[#0D1117]">
-            <div className="max-w-3xl mx-auto">
-              <div className="mb-6 flex justify-center">
-                <img src="/afc-user-logo.jpg" alt="Aero Fabrication Club" className="h-24 sm:h-28 w-auto object-contain block" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
+          <section className="relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 px-4 text-center bg-[#0D1117]" style={{overflow:'hidden'}}>
+            {/* Blueprint grid */}
+            <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(to right,rgba(30,111,186,0.055) 1px,transparent 1px),linear-gradient(to bottom,rgba(30,111,186,0.055) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}} />
+            {/* Glow orb */}
+            <div style={{position:'absolute',top:'30%',left:'50%',transform:'translate(-50%,-50%)',width:'600px',height:'600px',background:'radial-gradient(circle,rgba(41,171,226,0.12) 0%,rgba(30,111,186,0.07) 40%,transparent 70%)',borderRadius:'50%',pointerEvents:'none'}} />
+
+            <div style={{position:'relative',zIndex:10,maxWidth:'900px',margin:'0 auto'}}>
+              {/* Eyebrow badge */}
+              <div style={{display:'inline-flex',alignItems:'center',gap:'8px',padding:'6px 16px',borderRadius:'9999px',background:'rgba(17,24,39,0.8)',border:'1px solid rgba(41,171,226,0.3)',backdropFilter:'blur(8px)',marginBottom:'2rem',boxShadow:'0 0 15px rgba(41,171,226,0.12)'}}>
+                <span style={{width:'8px',height:'8px',borderRadius:'50%',background:'#29ABE2',display:'inline-block',animation:'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite'}} />
+                <span style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:'0.7rem',fontWeight:700,color:'#29ABE2',letterSpacing:'0.15em',textTransform:'uppercase'}}>
+                  AERO FABRICATION CLUB · IIITDMJ PRESENTS
+                </span>
               </div>
 
-              <div className="my-2 py-2 flex flex-col items-center justify-center">
-                <img src="/thrust5-title-transparent.png" alt="THRUST 5.0" className="w-full max-w-2xl object-contain drop-shadow-[0_0_40px_rgba(41,171,226,0.6)] mix-blend-screen" onError={(e)=>{e.target.style.display='none';}} />
+              {/* THRUST main title */}
+              <div style={{
+                fontFamily:"'Rajdhani',sans-serif",
+                fontWeight:700,
+                fontSize:'clamp(4rem,14vw,10rem)',
+                color:'#ffffff',
+                lineHeight:1,
+                letterSpacing:'0.06em',
+                textTransform:'uppercase',
+                userSelect:'none',
+                animation:'titleGlow 3s ease-in-out infinite',
+              }}>
+                THRUST
               </div>
 
-              <p className="text-base sm:text-xl text-[#94A3B8] max-w-xl mx-auto mb-2">
-                The Ultimate Water Rocket Challenge
+              {/* 5.0 versioning */}
+              <div style={{
+                fontFamily:"'Rajdhani',sans-serif",
+                fontWeight:700,
+                fontSize:'clamp(2.5rem,9vw,6.5rem)',
+                lineHeight:1,
+                letterSpacing:'0.18em',
+                textTransform:'uppercase',
+                userSelect:'none',
+                marginTop:'-0.5rem',
+                background:'linear-gradient(135deg,#56CCF2 0%,#29ABE2 50%,#1E6FBA 100%)',
+                WebkitBackgroundClip:'text',
+                WebkitTextFillColor:'transparent',
+                backgroundClip:'text',
+                animation:'numGlow 3s ease-in-out infinite 0.5s',
+              }}>
+                5.0
+              </div>
+
+              {/* Accent line */}
+              <div style={{width:'clamp(10rem,40vw,18rem)',height:'1px',background:'linear-gradient(to right,transparent,#29ABE2,transparent)',margin:'1.25rem auto 0',opacity:0.7,boxShadow:'0 0 10px #29ABE2'}} />
+
+              {/* Subtitle */}
+              <p style={{fontFamily:"'Inter',sans-serif",fontSize:'clamp(0.9rem,2vw,1.1rem)',color:'#94A3B8',maxWidth:'560px',margin:'1.5rem auto 0.5rem',lineHeight:1.7,fontWeight:500}}>
+                The Ultimate Flagship Water Rocket Challenge
               </p>
-              <div className="font-heading font-bold text-xs sm:text-sm text-[#29ABE2] tracking-widest uppercase mb-8">
+
+              {/* Exclusive tag */}
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',fontFamily:"'Space Grotesk',sans-serif",fontWeight:700,fontSize:'0.75rem',color:'#29ABE2',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'2.5rem'}}>
+                <span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#29ABE2',display:'inline-block'}} />
                 Exclusively for First-Year Students
+                <span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#29ABE2',display:'inline-block'}} />
               </div>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center items-stretch max-w-md mx-auto mb-12">
-                <a href="#register" className="btn-launch text-sm py-3.5 px-8 font-bold">Register Team</a>
-                <a href="#details" className="px-6 py-3.5 rounded-lg border border-[#1E3A5F] text-[#94A3B8] font-heading font-semibold text-xs uppercase tracking-wider">Event Details</a>
+
+              {/* CTA Buttons */}
+              <div style={{display:'flex',flexWrap:'wrap',gap:'12px',justifyContent:'center',alignItems:'center',maxWidth:'400px',margin:'0 auto'}}>
+                <a href="#register" className="btn-launch" style={{flex:1,minWidth:'160px',padding:'14px 32px',textAlign:'center',fontWeight:800,fontSize:'0.875rem'}}>
+                  Register Team
+                </a>
+                <a href="#details" style={{flex:1,minWidth:'160px',padding:'14px 24px',borderRadius:'8px',border:'1px solid #1E3A5F',background:'rgba(17,24,39,0.8)',color:'#94A3B8',fontFamily:"'Space Grotesk',sans-serif",fontWeight:600,fontSize:'0.75rem',letterSpacing:'0.1em',textTransform:'uppercase',textAlign:'center',textDecoration:'none',transition:'all 0.2s'}}>
+                  Event Details
+                </a>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
-                <div className="p-3 rounded-lg bg-[#111827] border border-[#1E3A5F]">
-                  <div className="text-[10px] text-[#29ABE2] font-mono uppercase font-bold">Eligibility</div>
-                  <div className="text-xs font-semibold text-white mt-0.5">1st Years Only</div>
-                </div>
-                <div className="p-3 rounded-lg bg-[#111827] border border-[#1E3A5F]">
-                  <div className="text-[10px] text-[#29ABE2] font-mono uppercase font-bold">Team Size</div>
-                  <div className="text-xs font-semibold text-white mt-0.5">2 - 4 Members</div>
-                </div>
-                <div className="p-3 rounded-lg bg-[#111827] border border-[#1E3A5F]">
-                  <div className="text-[10px] text-[#29ABE2] font-mono uppercase font-bold">Fee</div>
-                  <div className="text-xs font-semibold text-white mt-0.5">₹120 / Team</div>
-                </div>
-                <div className="p-3 rounded-lg bg-[#111827] border border-[#1E3A5F]">
-                  <div className="text-[10px] text-[#29ABE2] font-mono uppercase font-bold">Host</div>
-                  <div className="text-xs font-semibold text-white mt-0.5">AFC IIITDMJ</div>
-                </div>
+
+              {/* Highlights bar */}
+              <div style={{marginTop:'4rem',display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'12px',maxWidth:'700px',margin:'4rem auto 0'}}>
+                {[
+                  {label:'Eligibility',val:'1st Year Students'},
+                  {label:'Team Size',val:'2 to 4 Members'},
+                  {label:'Registration Fee',val:'₹120 / Team'},
+                  {label:'Organized By',val:'AFC IIITDMJ'},
+                ].map(c => (
+                  <div key={c.label} style={{padding:'14px',borderRadius:'12px',background:'rgba(17,24,39,0.7)',border:'1px solid #1E3A5F',textAlign:'left',backdropFilter:'blur(4px)'}}>
+                    <div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:'0.65rem',color:'#29ABE2',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.12em'}}>{c.label}</div>
+                    <div style={{fontFamily:"'Inter',sans-serif",fontSize:'0.8rem',color:'#ffffff',fontWeight:600,marginTop:'4px'}}>{c.val}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
@@ -327,7 +390,7 @@
         if (submittedData) return (
           <section id="register" className="py-20 px-4 bg-[#080C11] border-t border-[#1E3A5F]">
             <div className="max-w-xl mx-auto cyber-card p-8 text-center space-y-5 relative overflow-hidden">
-              <img src="/afc-user-logo.jpg" alt="Aero Fabrication Club" className="h-20 w-auto mx-auto mb-4 block object-contain" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
+              <img src="/afc-logo-transparent.png" alt="AFC Logo" style={{height:'2.5rem',width:'auto',objectFit:'contain',filter:'drop-shadow(0 0 10px rgba(41,171,226,0.6))',display:'block'}} onError={(e)=>{e.target.onerror=null;e.target.src='/afc-user-logo.jpg'}} />
 
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold uppercase tracking-wider mb-2">
@@ -511,7 +574,7 @@
           <footer className="bg-[#080C11] border-t border-[#1E3A5F] py-8 px-4 text-center sm:text-left">
             <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-[#64748B]">
               <div className="flex items-center gap-3">
-                <img src="/afc-user-logo.jpg" alt="Aero Fabrication Club" className="h-10 w-auto object-contain block" onError={(e)=>{e.target.onerror=null; e.target.src='/afc-logo.png';}} />
+                <img src="/afc-logo-transparent.png" alt="AFC Logo" style={{height:'2.5rem',width:'auto',objectFit:'contain',filter:'drop-shadow(0 0 10px rgba(41,171,226,0.6))',display:'block'}} onError={(e)=>{e.target.onerror=null;e.target.src='/afc-user-logo.jpg'}} />
                 <div>
                   <div className="font-heading font-extrabold text-sm text-white mb-0.5">THRUST <span className="text-[#29ABE2]">5.0</span></div>
                   <div className="text-[#29ABE2] font-semibold">Aero Fabrication Club, IIITDM Jabalpur</div>
