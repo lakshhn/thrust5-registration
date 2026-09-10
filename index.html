@@ -142,7 +142,8 @@
               </a>
               <div className="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
                 <a href="#details" className="hover:text-[#29ABE2]">Overview</a>
-                <a href="#rules" className="hover:text-[#29ABE2]">Rules</a>
+                <a href="#judging" className="hover:text-[#29ABE2]">Judging</a>
+                <a href="#rules" className="hover:text-[#29ABE2]">Rulebook</a>
                 <a href="#register" className="btn-launch px-5 py-2 text-xs">Register Team</a>
               </div>
               <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-[#29ABE2]">
@@ -154,7 +155,8 @@
             {open && (
               <div className="md:hidden bg-[#0D1117] border-b border-[#1E3A5F] px-4 py-4 space-y-3">
                 <a href="#details" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Overview</a>
-                <a href="#rules" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Rules</a>
+                <a href="#judging" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Judging Criteria</a>
+                <a href="#rules" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Rulebook</a>
                 <a href="#register" onClick={() => setOpen(false)} className="btn-launch w-full text-center py-2.5 text-xs">Register Team</a>
               </div>
             )}
@@ -259,39 +261,172 @@
 
       function EventDetails() {
         const cards = [
-          { label: 'Date', val: 'TBA 2025' },
-          { label: 'Time', val: '09:00 AM' },
-          { label: 'Venue', val: 'IIITDMJ Grounds' },
-          { label: 'Entry Fee', val: '₹120 / Team' },
+          { label: 'Date', val: '4 Oct 2026', sub: 'Sunday' },
+          { label: 'Time', val: '09:00 AM', sub: 'Onwards' },
+          { label: 'Venue', val: 'Cricket Ground', sub: 'IIITDMJ Campus' },
+          { label: 'Entry Fee', val: '₹120 / Team', sub: '2 to 4 Members' },
         ];
+
+        const judgingCriteria = [
+          {
+            title: 'Max Time of Flight',
+            badge: 'Airtime',
+            desc: 'Measured from pressurized launcher release to initial ground impact. Longer sustained aerodynamic flight duration yields maximum points.',
+            icon: (
+              <svg className="w-5 h-5 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            )
+          },
+          {
+            title: 'Maximum Range',
+            badge: 'Distance',
+            desc: 'Total downrange horizontal distance achieved across the Cricket Ground from the launch pad to the landing zone.',
+            icon: (
+              <svg className="w-5 h-5 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            )
+          },
+          {
+            title: 'Rocket Design',
+            badge: 'Aerodynamics',
+            desc: 'Fin geometry and alignment, center-of-gravity/pressure balance, nose cone shaping, payload balance, and aesthetic finish.',
+            icon: (
+              <svg className="w-5 h-5 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            )
+          },
+          {
+            title: 'Launcher Design',
+            badge: 'Engineering',
+            desc: 'Launch platform rigidity, air-water pressure seal integrity, nozzle release reliability, and launch trigger safety mechanism.',
+            icon: (
+              <svg className="w-5 h-5 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            )
+          },
+        ];
+
         return (
           <section id="details" className="py-16 px-4 bg-[#0D1117] border-t border-[#1E3A5F]">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-12">
+            <div className="max-w-5xl mx-auto space-y-12">
+              {/* Event Overview Header */}
+              <div className="text-center">
                 <div className="font-heading text-xs font-semibold text-[#29ABE2] uppercase tracking-widest mb-1">Event Overview</div>
                 <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-white tracking-tight mb-3">
                   Engineer. Build. <span className="text-[#29ABE2]">Launch.</span>
                 </h2>
                 <p className="text-sm sm:text-base text-[#94A3B8] max-w-2xl mx-auto leading-relaxed">
-                  Design and fabricate high-performance water rockets. Compete for max flight height, aerodynamic stability, and engineering finesse.
+                  Design and fabricate high-performance water rockets. Compete on the Cricket Ground for maximum time of flight, downrange distance, and engineering design.
                 </p>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+
+              {/* Event Metadata Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {cards.map(c => (
-                  <div key={c.label} className="cyber-card p-4">
-                    <div className="text-[10px] text-[#29ABE2] font-mono font-bold uppercase">{c.label}</div>
-                    <div className="font-heading font-bold text-lg text-white mt-1">{c.val}</div>
+                  <div key={c.label} className="cyber-card p-4 sm:p-5 border border-[#1E3A5F] hover:border-[#29ABE2]/60 transition-all">
+                    <div className="text-[10px] text-[#29ABE2] font-mono font-bold uppercase tracking-wider">{c.label}</div>
+                    <div className="font-heading font-bold text-lg sm:text-xl text-white mt-1">{c.val}</div>
+                    <div className="text-[11px] text-[#64748B] mt-0.5">{c.sub}</div>
                   </div>
                 ))}
               </div>
-              <div id="rules" className="cyber-card p-6 border-l-4 border-l-[#29ABE2]">
-                <h3 className="font-heading font-bold text-base text-white mb-3 flex items-center gap-2">Competition Format & Guidelines</h3>
-                <ul className="space-y-2 text-xs sm:text-sm text-[#94A3B8]">
-                  <li>• Exclusively for 1st-year undergraduate students of IIITDMJ.</li>
-                  <li>• Team size: 2 to 4 members with a designated Team Leader.</li>
-                  <li>• Propulsion: Water + pressurized air only (no chemical propellants).</li>
-                  <li>• Judged on apogee (max height), flight stability, and rocket aesthetics.</li>
-                </ul>
+
+              {/* Judging & Scoring Criteria */}
+              <div id="judging" className="space-y-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#1E3A5F] pb-3">
+                  <div>
+                    <h3 className="font-heading font-extrabold text-xl text-white">Judging & Scoring Criteria</h3>
+                    <p className="text-xs text-[#94A3B8]">Official evaluation parameters deciding the Thrust 5.0 Champions</p>
+                  </div>
+                  <div className="text-[11px] font-mono text-[#29ABE2] bg-[#29ABE2]/10 px-3 py-1 rounded-full border border-[#29ABE2]/30">
+                    4 Core Parameters
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {judgingCriteria.map((crit) => (
+                    <div key={crit.title} className="cyber-card p-5 border border-[#1E3A5F] hover:border-[#29ABE2]/60 transition-all group">
+                      <div className="flex items-center justify-between gap-3 mb-2.5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-[#1E6FBA]/20 border border-[#29ABE2]/30 flex items-center justify-center shrink-0">
+                            {crit.icon}
+                          </div>
+                          <span className="font-heading font-bold text-sm sm:text-base text-white group-hover:text-[#29ABE2] transition-colors">
+                            {crit.title}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#111827] border border-[#1E3A5F] text-[#29ABE2]">
+                          {crit.badge}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#94A3B8] leading-relaxed pl-10">
+                        {crit.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Official Rulebook Section */}
+              <div id="rules" className="cyber-card p-6 sm:p-8 border border-[#1E3A5F] relative overflow-hidden">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#1E3A5F]/60 pb-4 mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#29ABE2]/10 border border-[#29ABE2]/40 flex items-center justify-center text-[#29ABE2] shrink-0">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">Official Rulebook</h3>
+                      <p className="text-xs text-[#94A3B8]">Technical specifications, dimension limits & launch protocols</p>
+                    </div>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold uppercase tracking-wider shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    To Be Released Soon
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs text-[#94A3B8] mb-6">
+                  <div className="p-4 rounded-xl bg-[#0A0F16] border border-[#1E3A5F]/70">
+                    <div className="font-heading font-bold text-white text-xs mb-1.5 flex items-center gap-1.5 text-[#29ABE2]">
+                      <span>⚙️</span> Launcher Specifications
+                    </div>
+                    <p className="text-[11px] text-[#94A3B8] leading-relaxed">
+                      Custom-fabricated launch platforms permitted. Must support secure angle calibration and remote pull-cord release.
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[#0A0F16] border border-[#1E3A5F]/70">
+                    <div className="font-heading font-bold text-white text-xs mb-1.5 flex items-center gap-1.5 text-[#29ABE2]">
+                      <span>🚀</span> Rocket Dimensions & Materials
+                    </div>
+                    <p className="text-[11px] text-[#94A3B8] leading-relaxed">
+                      Built strictly using standard PET beverage bottles. Metal, glass, and sharp hazardous nose ballasts are prohibited.
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[#0A0F16] border border-[#1E3A5F]/70">
+                    <div className="font-heading font-bold text-white text-xs mb-1.5 flex items-center gap-1.5 text-[#29ABE2]">
+                      <span>🛡️</span> Pressure & Safety Limits
+                    </div>
+                    <p className="text-[11px] text-[#94A3B8] leading-relaxed">
+                      Water and compressed air only. Operating pressure limits and field inspection guidelines will be specified in the rulebook.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-xl bg-[#111827] border border-[#1E3A5F]">
+                  <div className="text-xs text-slate-300">
+                    📢 The official PDF rulebook with launch slot timings and scoring formulas will be published here & shared on the WhatsApp group prior to the event.
+                  </div>
+                  <button disabled className="btn-launch opacity-50 cursor-not-allowed px-5 py-2.5 text-xs tracking-wider shrink-0">
+                    Rulebook Coming Soon
+                  </button>
+                </div>
               </div>
             </div>
           </section>
