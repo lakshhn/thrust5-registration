@@ -631,13 +631,8 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
 
           {/* Section 2: Team Members */}
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#1E3A5F] pb-2 gap-1">
-              <div className="font-heading font-bold text-xs text-[#29ABE2] tracking-wider uppercase">
-                2. Team Members (Teammates)
-              </div>
-              <span className="text-[10px] text-[#64748B] font-mono">
-                Leader is Member 1 · Min 2, Max 3 members
-              </span>
+            <div className="font-heading font-bold text-xs text-[#29ABE2] tracking-wider uppercase border-b border-[#1E3A5F] pb-2">
+              2. Team Members (Teammates)
             </div>
 
             {/* Member 2 (Required) */}
