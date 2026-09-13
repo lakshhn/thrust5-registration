@@ -8,8 +8,6 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
     teamLeader: '',
     leaderRoll: '',
     leaderPhone: '',
-    m1Name: '',
-    m1Roll: '',
     m2Name: '',
     m2Roll: '',
     m3Name: '',
@@ -303,9 +301,6 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
       errs.leaderPhone = 'Enter a valid 10-digit mobile number.';
     }
 
-    if (!formData.m1Name.trim()) errs.m1Name = 'Member 1 Name is required.';
-    if (!formData.m1Roll.trim()) errs.m1Roll = 'Member 1 Roll Number is required.';
-
     if (!formData.m2Name.trim()) errs.m2Name = 'Member 2 Name is required.';
     if (!formData.m2Roll.trim()) errs.m2Roll = 'Member 2 Roll Number is required.';
 
@@ -341,8 +336,9 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
       teamLeader: formData.teamLeader.trim(),
       leaderRoll: formData.leaderRoll.trim(),
       leaderPhone: formData.leaderPhone.trim(),
-      m1Name: formData.m1Name.trim(),
-      m1Roll: formData.m1Roll.trim(),
+      // Team leader IS Member 1
+      m1Name: formData.teamLeader.trim(),
+      m1Roll: formData.leaderRoll.trim(),
       m2Name: formData.m2Name.trim(),
       m2Roll: formData.m2Roll.trim(),
       m3Name: formData.m3Name.trim() || 'N/A',
@@ -388,7 +384,7 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
     setSubmittedData(null);
     setFormData({
       teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',
-      m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: ''
+      m2Name: '', m2Roll: '', m3Name: '', m3Roll: ''
     });
     removeFile();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -464,8 +460,8 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
                 <div>
                   <span className="text-[#64748B] block text-[10px] uppercase font-mono">Teammates</span>
                   <span className="text-white font-medium">
-                    {submittedData.m1Name}, {submittedData.m2Name}
-                    {submittedData.m3Name ? `, ${submittedData.m3Name}` : ''}
+                    {submittedData.m2Name}
+                    {submittedData.m3Name && submittedData.m3Name !== '-' && submittedData.m3Name !== 'N/A' ? `, ${submittedData.m3Name}` : ''}
                   </span>
                 </div>
                 <div>
@@ -635,40 +631,23 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
 
           {/* Section 2: Team Members */}
           <div className="space-y-4">
-            <div className="font-heading font-bold text-xs text-[#29ABE2] tracking-wider uppercase border-b border-[#1E3A5F] pb-2">
-              2. Team Members
-            </div>
-
-            {/* Member 1 */}
-            <div className="bg-[#0A0F16] p-4 rounded-lg border border-[#1E3A5F]/60 space-y-3">
-              <span className="text-xs font-bold text-white uppercase tracking-wider block">Member 1</span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <input
-                    type="text"
-                    className="mobile-input"
-                    placeholder="Full Name *"
-                    value={formData.m1Name}
-                    onChange={(e) => updateField('m1Name', e.target.value)}
-                  />
-                  {errors.m1Name && <p className="text-red-400 text-xs mt-1">{errors.m1Name}</p>}
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    className="mobile-input"
-                    placeholder="Roll Number *"
-                    value={formData.m1Roll}
-                    onChange={(e) => updateField('m1Roll', e.target.value)}
-                  />
-                  {errors.m1Roll && <p className="text-red-400 text-xs mt-1">{errors.m1Roll}</p>}
-                </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#1E3A5F] pb-2 gap-1">
+              <div className="font-heading font-bold text-xs text-[#29ABE2] tracking-wider uppercase">
+                2. Team Members (Teammates)
               </div>
+              <span className="text-[10px] text-[#64748B] font-mono">
+                Leader is Member 1 · Min 2, Max 3 members
+              </span>
             </div>
 
-            {/* Member 2 */}
+            {/* Member 2 (Required) */}
             <div className="bg-[#0A0F16] p-4 rounded-lg border border-[#1E3A5F]/60 space-y-3">
-              <span className="text-xs font-bold text-white uppercase tracking-wider block">Member 2</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-white uppercase tracking-wider block">
+                  Member 2 <span className="text-[#29ABE2]">*</span>
+                </span>
+                <span className="text-[10px] text-emerald-400 font-mono font-semibold">Required</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <input
@@ -695,9 +674,12 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
 
             {/* Member 3 (Optional) */}
             <div className="bg-[#0A0F16] p-4 rounded-lg border border-[#1E3A5F]/40 space-y-3">
-              <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">
-                Member 3 <span className="text-[10px] font-normal lowercase">(optional)</span>
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">
+                  Member 3 <span className="text-[10px] font-normal lowercase">(optional)</span>
+                </span>
+                <span className="text-[10px] text-[#64748B] font-mono">Optional</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input
                   type="text"

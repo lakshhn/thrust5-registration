@@ -156,9 +156,9 @@ function doPost(e) {
     var timestamp   = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
     var teamLeader  = data.teamLeader || 'N/A';
     var leaderRoll  = data.leaderRoll  || 'N/A';
-    var leaderPhone = "'" + (data.leaderPhone || '');
-    var m1Name      = data.m1Name || 'N/A';
-    var m1Roll      = data.m1Roll || 'N/A';
+    // Team Leader is Member 1
+    var m1Name      = data.m1Name || teamLeader || 'N/A';
+    var m1Roll      = data.m1Roll || leaderRoll || 'N/A';
     var m2Name      = data.m2Name || 'N/A';
     var m2Roll      = data.m2Roll || 'N/A';
     var m3Name      = data.m3Name || '-';

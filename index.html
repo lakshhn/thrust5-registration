@@ -416,7 +416,7 @@
       function RegistrationForm({ onSubmittedStateChange }) {
         const [form, setForm] = useState({
           teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',
-          m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: ''
+          m2Name: '', m2Roll: '', m3Name: '', m3Roll: ''
         });
         const [file, setFile] = useState(null);
         const [filePreview, setFilePreview] = useState(null);
@@ -610,8 +610,6 @@
           if (!form.teamLeader.trim()) e.teamLeader = 'Required';
           if (!form.leaderRoll.trim()) e.leaderRoll = 'Required';
           else if (!/^\d{10}$/.test(form.leaderPhone.replace(/\s/g, ''))) e.leaderPhone = 'Enter valid 10-digit number';
-          if (!form.m1Name.trim()) e.m1Name = 'Required';
-          if (!form.m1Roll.trim()) e.m1Roll = 'Required';
           if (!form.m2Name.trim()) e.m2Name = 'Required';
           if (!form.m2Roll.trim()) e.m2Roll = 'Required';
           if (!file) e.file = 'Payment receipt is compulsory! Please upload your payment screenshot to complete registration.';
@@ -637,6 +635,8 @@
             regId: 'THRUST5-' + Math.floor(100000 + Math.random() * 900000),
             timestamp: new Date().toISOString(),
             ...form,
+            m1Name: form.teamLeader.trim(),
+            m1Roll: form.leaderRoll.trim(),
             fileName: file.name,
             fileData: fileBase64,
             paymentReceipt: fileBase64,
@@ -675,7 +675,7 @@
 
         const handleDone = () => {
           setSubmittedData(null);
-          setForm({ teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '', m1Name: '', m1Roll: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: '' });
+          setForm({ teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '', m2Name: '', m2Roll: '', m3Name: '', m3Roll: '' });
           setFile(null); setFilePreview(null); setFileBase64('');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         };
@@ -718,7 +718,7 @@
                   </div>
                   <div>
                     <span className="text-[#64748B] block text-[10px] uppercase font-mono">Teammates</span>
-                    <span className="text-white font-medium">{submittedData.m1Name}, {submittedData.m2Name}{submittedData.m3Name ? `, ${submittedData.m3Name}` : ''}</span>
+                    <span className="text-white font-medium">{submittedData.m2Name}{submittedData.m3Name && submittedData.m3Name !== '-' && submittedData.m3Name !== 'N/A' ? `, ${submittedData.m3Name}` : ''}</span>
                   </div>
                   <div>
                     <span className="text-[#64748B] block text-[10px] uppercase font-mono">Payment Status</span>
@@ -810,19 +810,40 @@
                 </div>
 
                 <div>
-                  <div className="font-heading text-xs font-bold text-[#29ABE2] uppercase tracking-wider mb-3">2. Team Members</div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#1E3A5F] pb-2 mb-3 gap-1">
+                    <div className="font-heading text-xs font-bold text-[#29ABE2] uppercase tracking-wider">
+                      2. Team Members (Teammates)
+                    </div>
+                    <span className="text-[10px] text-[#64748B] font-mono">
+                      Leader is Member 1 · Min 2, Max 3 members
+                    </span>
+                  </div>
                   <div className="space-y-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#0A0F16] p-3 rounded-lg border border-[#1E3A5F]">
-                      <input type="text" className="mobile-input" placeholder="Member 1 Name *" value={form.m1Name} onChange={e => set('m1Name', e.target.value)} />
-                      <input type="text" className="mobile-input" placeholder="Member 1 Roll No *" value={form.m1Roll} onChange={e => set('m1Roll', e.target.value)} />
+                    <div className="bg-[#0A0F16] p-3 rounded-lg border border-[#1E3A5F] space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-white uppercase tracking-wider">Member 2 <span className="text-[#29ABE2]">*</span></span>
+                        <span className="text-[10px] text-emerald-400 font-mono font-semibold">Required</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <input type="text" className="mobile-input" placeholder="Member 2 Name *" value={form.m2Name} onChange={e => set('m2Name', e.target.value)} />
+                          {errors.m2Name && <p className="text-red-400 text-xs mt-1">{errors.m2Name}</p>}
+                        </div>
+                        <div>
+                          <input type="text" className="mobile-input" placeholder="Member 2 Roll No *" value={form.m2Roll} onChange={e => set('m2Roll', e.target.value)} />
+                          {errors.m2Roll && <p className="text-red-400 text-xs mt-1">{errors.m2Roll}</p>}
+                        </div>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#0A0F16] p-3 rounded-lg border border-[#1E3A5F]">
-                      <input type="text" className="mobile-input" placeholder="Member 2 Name *" value={form.m2Name} onChange={e => set('m2Name', e.target.value)} />
-                      <input type="text" className="mobile-input" placeholder="Member 2 Roll No *" value={form.m2Roll} onChange={e => set('m2Roll', e.target.value)} />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#0A0F16] p-3 rounded-lg border border-[#1E3A5F]">
-                      <input type="text" className="mobile-input" placeholder="Member 3 Name (optional)" value={form.m3Name} onChange={e => set('m3Name', e.target.value)} />
-                      <input type="text" className="mobile-input" placeholder="Member 3 Roll No (optional)" value={form.m3Roll} onChange={e => set('m3Roll', e.target.value)} />
+                    <div className="bg-[#0A0F16] p-3 rounded-lg border border-[#1E3A5F]/40 space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-[#64748B] uppercase tracking-wider">Member 3 <span className="text-[10px] font-normal lowercase">(optional)</span></span>
+                        <span className="text-[10px] text-[#64748B] font-mono">Optional</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input type="text" className="mobile-input" placeholder="Member 3 Name (optional)" value={form.m3Name} onChange={e => set('m3Name', e.target.value)} />
+                        <input type="text" className="mobile-input" placeholder="Member 3 Roll No (optional)" value={form.m3Roll} onChange={e => set('m3Roll', e.target.value)} />
+                      </div>
                     </div>
                   </div>
                 </div>
