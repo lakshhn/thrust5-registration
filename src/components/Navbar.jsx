@@ -48,6 +48,9 @@ export default function Navbar() {
           <a href="#details" className="hover:text-[#29ABE2] transition-colors">
             Overview
           </a>
+          <a href="#prizes" className="hover:text-[#FBBF24] transition-colors flex items-center gap-1.5 text-white">
+            <span className="text-[#FBBF24]">🏆</span> Prizes
+          </a>
           <a href="#rules" className="hover:text-[#29ABE2] transition-colors">
             Rules & Criteria
           </a>
@@ -90,6 +93,13 @@ export default function Navbar() {
               className="block text-sm font-semibold uppercase tracking-wider text-[#94A3B8] hover:text-[#29ABE2]"
             >
               Overview
+            </a>
+            <a
+              href="#prizes"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-semibold uppercase tracking-wider text-[#FBBF24] hover:text-[#FBBF24] flex items-center gap-1.5"
+            >
+              <span>🏆</span> Prize Pool (₹6,000)
             </a>
             <a
               href="#rules"

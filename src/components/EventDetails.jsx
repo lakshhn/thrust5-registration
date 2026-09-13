@@ -101,6 +101,111 @@ export default function EventDetails() {
           </p>
         </motion.div>
 
+        {/* Grand Prize Pool & Special Category Awards Spotlight */}
+        <motion.div
+          id="prizes"
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative rounded-2xl border-2 border-[#29ABE2]/50 bg-gradient-to-b from-[#0F1D30] via-[#0A1320] to-[#080D14] p-6 sm:p-10 text-center overflow-hidden shadow-[0_0_50px_rgba(41,171,226,0.18)]"
+        >
+          {/* Ambient Corner Glows */}
+          <div className="absolute -top-24 -left-24 w-56 h-56 bg-[#29ABE2]/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -right-24 w-56 h-56 bg-[#F59E0B]/15 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Aerospace HUD Corner Brackets */}
+          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#29ABE2] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#29ABE2] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#29ABE2] pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#29ABE2] pointer-events-none" />
+
+          {/* Top Eyebrow Tag */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F59E0B]/15 border border-[#F59E0B]/35 text-[#FBBF24] text-xs font-mono font-bold uppercase tracking-wider mb-4 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+            <span className="w-2 h-2 rounded-full bg-[#FBBF24] animate-pulse" />
+            Official Competition Rewards
+          </div>
+
+          {/* Main Title & Massive Prize Amount */}
+          <div className="font-heading font-extrabold text-xs sm:text-sm text-[#29ABE2] uppercase tracking-[0.25em] mb-1">
+            Total Prize Pool
+          </div>
+          <div
+            className="font-heading font-extrabold text-5xl sm:text-7xl md:text-8xl tracking-tight my-2 select-none"
+            style={{
+              fontFamily: "'Rajdhani', 'Space Grotesk', sans-serif",
+              background: 'linear-gradient(135deg, #FFFFFF 0%, #56CCF2 30%, #FBBF24 75%, #F59E0B 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              filter: 'drop-shadow(0 0 25px rgba(41,171,226,0.4)) drop-shadow(0 0 40px rgba(245,158,11,0.25))',
+            }}
+          >
+            ₹6,000
+          </div>
+          <p className="text-xs sm:text-sm text-[#94A3B8] max-w-xl mx-auto mb-8 font-medium leading-relaxed">
+            Cash prizes, official championship trophies, and certificates of excellence for winning teams.
+          </p>
+
+          {/* 2 Featured Special Category Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto text-left">
+            {/* Card 1: Best Design */}
+            <div className="p-5 rounded-xl bg-[#0D1624]/90 border border-[#29ABE2]/40 hover:border-[#29ABE2] transition-all group relative overflow-hidden shadow-lg shadow-[#29ABE2]/5">
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="w-10 h-10 rounded-lg bg-[#29ABE2]/15 border border-[#29ABE2]/30 flex items-center justify-center text-[#29ABE2] shrink-0 group-hover:scale-105 transition-transform">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-[#29ABE2]/10 border border-[#29ABE2]/30 text-[#29ABE2]">
+                  Special Prize
+                </span>
+              </div>
+              <div className="font-heading font-extrabold text-base sm:text-lg text-white mb-1.5 flex items-center gap-1.5">
+                <span>Best Design Award</span>
+              </div>
+              <p className="text-xs text-[#94A3B8] leading-relaxed">
+                Special dedicated cash prize honoring the team with the most innovative aerodynamic rocket design, fin stability, and precision launcher mechanics.
+              </p>
+            </div>
+
+            {/* Card 2: All Girls Team */}
+            <div className="p-5 rounded-xl bg-[#0D1624]/90 border border-[#F472B6]/40 hover:border-[#F472B6] transition-all group relative overflow-hidden shadow-lg shadow-[#F472B6]/5">
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="w-10 h-10 rounded-lg bg-[#F472B6]/15 border border-[#F472B6]/30 flex items-center justify-center text-[#F472B6] shrink-0 group-hover:scale-105 transition-transform">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-[#F472B6]/10 border border-[#F472B6]/30 text-[#F472B6]">
+                  Special Prize
+                </span>
+              </div>
+              <div className="font-heading font-extrabold text-base sm:text-lg text-white mb-1.5 flex items-center gap-1.5">
+                <span>All-Girls Team Prize</span>
+              </div>
+              <p className="text-xs text-[#94A3B8] leading-relaxed">
+                Exclusive special award celebrating and empowering women in rocketry — recognizing the top-performing all-women team in the competition.
+              </p>
+            </div>
+          </div>
+
+          {/* Additional Perks Footer Strip */}
+          <div className="mt-6 pt-5 border-t border-[#1E3A5F]/60 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-[#94A3B8]">
+            <span className="flex items-center gap-1.5">
+              <span className="text-emerald-400 font-bold">✓</span> Cash Rewards
+            </span>
+            <span className="hidden sm:inline text-[#1E3A5F]">·</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-emerald-400 font-bold">✓</span> Winner Trophies & Medals
+            </span>
+            <span className="hidden sm:inline text-[#1E3A5F]">·</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-emerald-400 font-bold">✓</span> Certificates of Excellence for Winners
+            </span>
+          </div>
+        </motion.div>
+
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           {cards.map((card, i) => (

@@ -108,12 +108,38 @@ export default function Hero() {
           </a>
         </motion.div>
 
+        {/* Prize Pool Spotlight Hero Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="mt-6 sm:mt-7 flex justify-center"
+        >
+          <a
+            href="#prizes"
+            className="group inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#111827]/90 border border-[#F59E0B]/40 hover:border-[#F59E0B] shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:shadow-[0_0_30px_rgba(245,158,11,0.3)] transition-all cursor-pointer text-xs"
+          >
+            <span className="flex items-center gap-1.5 font-heading font-extrabold text-white group-hover:text-[#FBBF24] transition-colors">
+              <span className="text-sm">🏆</span> Total Prize Pool: <span className="text-[#FBBF24] text-sm">₹6,000</span>
+            </span>
+            <span className="text-[#1E3A5F]">|</span>
+            <span className="text-[#94A3B8] font-medium flex items-center gap-1.5">
+              <span>Best Design</span>
+              <span className="text-[#F59E0B]">★</span>
+              <span>All-Girls Team Prize</span>
+            </span>
+            <svg className="w-3.5 h-3.5 text-[#F59E0B] group-hover:translate-x-1 transition-transform ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </motion.div>
+
         {/* Quick Highlights Bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-4 gap-3 text-left max-w-3xl mx-auto"
+          className="mt-10 sm:mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3 text-left max-w-3xl mx-auto"
         >
           <div className="p-3.5 rounded-xl bg-[#111827]/70 border border-[#1E3A5F] backdrop-blur-sm">
             <div className="text-[10px] sm:text-xs text-[#29ABE2] font-mono font-bold uppercase tracking-wider">Eligibility</div>

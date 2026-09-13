@@ -142,7 +142,9 @@
               </a>
               <div className="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
                 <a href="#details" className="hover:text-[#29ABE2]">Overview</a>
-                <a href="#judging" className="hover:text-[#29ABE2]">Judging</a>
+                <a href="#prizes" className="hover:text-[#FBBF24] flex items-center gap-1.5 text-white">
+                  <span className="text-[#FBBF24]">🏆</span> Prizes
+                </a>
                 <a href="#rules" className="hover:text-[#29ABE2]">Rulebook</a>
                 <a href="#register" className="btn-launch px-5 py-2 text-xs">Register Team</a>
               </div>
@@ -155,7 +157,9 @@
             {open && (
               <div className="md:hidden bg-[#0D1117] border-b border-[#1E3A5F] px-4 py-4 space-y-3">
                 <a href="#details" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Overview</a>
-                <a href="#judging" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Judging Criteria</a>
+                <a href="#prizes" onClick={() => setOpen(false)} className="block text-sm text-[#FBBF24] font-semibold flex items-center gap-1.5">
+                  <span>🏆</span> Prize Pool (₹6,000)
+                </a>
                 <a href="#rules" onClick={() => setOpen(false)} className="block text-sm text-[#94A3B8]">Rulebook</a>
                 <a href="#register" onClick={() => setOpen(false)} className="btn-launch w-full text-center py-2.5 text-xs">Register Team</a>
               </div>
@@ -240,8 +244,34 @@
                 </a>
               </div>
 
+              {/* Prize Pool Spotlight Hero Banner */}
+              <div style={{marginTop:'1.5rem',display:'flex',justifyContent:'center'}}>
+                <a
+                  href="#prizes"
+                  style={{
+                    display:'inline-flex',
+                    alignItems:'center',
+                    gap:'8px',
+                    padding:'8px 18px',
+                    borderRadius:'9999px',
+                    background:'rgba(17,24,39,0.9)',
+                    border:'1px solid rgba(245,158,11,0.45)',
+                    boxShadow:'0 0 20px rgba(245,158,11,0.15)',
+                    textDecoration:'none',
+                    fontSize:'0.75rem',
+                    color:'#ffffff',
+                    fontFamily:"'Space Grotesk',sans-serif",
+                    fontWeight:700,
+                  }}
+                >
+                  <span>🏆 Total Prize Pool: <span style={{color:'#FBBF24',fontWeight:800}}>₹6,000</span></span>
+                  <span style={{color:'#1E3A5F'}}>|</span>
+                  <span style={{color:'#94A3B8',fontWeight:500}}>Best Design ★ All-Girls Team Prize →</span>
+                </a>
+              </div>
+
               {/* Highlights bar */}
-              <div style={{marginTop:'4rem',display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'12px',maxWidth:'700px',margin:'4rem auto 0'}}>
+              <div style={{marginTop:'2.5rem',display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'12px',maxWidth:'700px',margin:'2.5rem auto 0'}}>
                 {[
                   {label:'Eligibility',val:'1st Year Students'},
                   {label:'Team Size',val:'2 to 3 Members'},
@@ -322,6 +352,101 @@
                 <p className="text-sm sm:text-base text-[#94A3B8] max-w-2xl mx-auto leading-relaxed">
                   Design and fabricate high-performance water rockets. Compete for maximum time of flight, downrange distance, and engineering design.
                 </p>
+              </div>
+
+              {/* Grand Prize Pool Spotlight Showcase */}
+              <div
+                id="prizes"
+                className="relative rounded-2xl border-2 border-[#29ABE2]/50 bg-gradient-to-b from-[#0F1D30] via-[#0A1320] to-[#080D14] p-6 sm:p-10 text-center overflow-hidden shadow-[0_0_50px_rgba(41,171,226,0.18)]"
+              >
+                {/* Corner HUD Accents */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#29ABE2] pointer-events-none" />
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#29ABE2] pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#29ABE2] pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#29ABE2] pointer-events-none" />
+
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F59E0B]/15 border border-[#F59E0B]/35 text-[#FBBF24] text-xs font-mono font-bold uppercase tracking-wider mb-4 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+                  <span className="w-2 h-2 rounded-full bg-[#FBBF24] animate-pulse" />
+                  Official Competition Rewards
+                </div>
+
+                <div className="font-heading font-extrabold text-xs sm:text-sm text-[#29ABE2] uppercase tracking-[0.25em] mb-1">
+                  Total Prize Pool
+                </div>
+                <div
+                  className="font-heading font-extrabold text-5xl sm:text-7xl md:text-8xl tracking-tight my-2 select-none"
+                  style={{
+                    fontFamily: "'Rajdhani', 'Space Grotesk', sans-serif",
+                    background: 'linear-gradient(135deg, #FFFFFF 0%, #56CCF2 30%, #FBBF24 75%, #F59E0B 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    filter: 'drop-shadow(0 0 25px rgba(41,171,226,0.4)) drop-shadow(0 0 40px rgba(245,158,11,0.25))',
+                  }}
+                >
+                  ₹6,000
+                </div>
+                <p className="text-xs sm:text-sm text-[#94A3B8] max-w-xl mx-auto mb-8 font-medium leading-relaxed">
+                  Cash rewards, official championship trophies, and certificates of excellence for winning teams.
+                </p>
+
+                {/* 2 Special Category Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto text-left">
+                  {/* Best Design */}
+                  <div className="p-5 rounded-xl bg-[#0D1624]/90 border border-[#29ABE2]/40 hover:border-[#29ABE2] transition-all group relative overflow-hidden shadow-lg shadow-[#29ABE2]/5">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-[#29ABE2]/15 border border-[#29ABE2]/30 flex items-center justify-center text-[#29ABE2] shrink-0">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-[#29ABE2]/10 border border-[#29ABE2]/30 text-[#29ABE2]">
+                        Special Prize
+                      </span>
+                    </div>
+                    <div className="font-heading font-extrabold text-base sm:text-lg text-white mb-1.5">
+                      Best Design Award
+                    </div>
+                    <p className="text-xs text-[#94A3B8] leading-relaxed">
+                      Special dedicated cash prize honoring the team with the most innovative aerodynamic rocket design, fin stability, and precision launcher mechanics.
+                    </p>
+                  </div>
+
+                  {/* All Girls Team */}
+                  <div className="p-5 rounded-xl bg-[#0D1624]/90 border border-[#F472B6]/40 hover:border-[#F472B6] transition-all group relative overflow-hidden shadow-lg shadow-[#F472B6]/5">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-[#F472B6]/15 border border-[#F472B6]/30 flex items-center justify-center text-[#F472B6] shrink-0">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-[#F472B6]/10 border border-[#F472B6]/30 text-[#F472B6]">
+                        Special Prize
+                      </span>
+                    </div>
+                    <div className="font-heading font-extrabold text-base sm:text-lg text-white mb-1.5">
+                      All-Girls Team Prize
+                    </div>
+                    <p className="text-xs text-[#94A3B8] leading-relaxed">
+                      Exclusive special award celebrating and empowering women in rocketry — recognizing the top-performing all-women team in the competition.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Additional Perks Footer Strip */}
+                <div className="mt-6 pt-5 border-t border-[#1E3A5F]/60 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-[#94A3B8]">
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-emerald-400 font-bold">✓</span> Cash Rewards
+                  </span>
+                  <span className="hidden sm:inline text-[#1E3A5F]">·</span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-emerald-400 font-bold">✓</span> Winner Trophies & Medals
+                  </span>
+                  <span className="hidden sm:inline text-[#1E3A5F]">·</span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-emerald-400 font-bold">✓</span> Certificates of Excellence for Winners
+                  </span>
+                </div>
               </div>
 
               {/* Event Metadata Grid */}
