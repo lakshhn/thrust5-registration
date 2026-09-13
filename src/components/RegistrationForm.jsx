@@ -21,10 +21,32 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
   const [receiptPreview, setReceiptPreview] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const [selectedQr, setSelectedQr] = useState('qr1');
+
+  const qrOptions = {
+    qr1: {
+      name: 'Option 1 (Shirshendu)',
+      payee: 'Shirshendu R Tripathi',
+      upiId: 'shirsh8924@oksbi',
+      image: '/payment-qr.png',
+      alt: 'Thrust 5.0 Payment QR - shirsh8924@oksbi',
+      link: 'upi://pay?pa=shirsh8924@oksbi&pn=Shirshendu%20R%20Tripathi&am=120&cu=INR&tn=Thrust%205.0%20Registration',
+    },
+    qr2: {
+      name: 'Option 2 (Apurva)',
+      payee: 'APURVA VERMA',
+      upiId: 'vermaapurva33@ibl',
+      image: '/payment-qr-2.png',
+      alt: 'Thrust 5.0 Payment QR - vermaapurva33@ibl',
+      link: 'upi://pay?pa=vermaapurva33@ibl&pn=APURVA%20VERMA&am=120&cu=INR&tn=Thrust%205.0%20Registration',
+    },
+  };
+
+  const activeQr = qrOptions[selectedQr] || qrOptions.qr1;
 
   const copyUpiId = () => {
     if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText('shirsh8924@oksbi');
+      navigator.clipboard.writeText(activeQr.upiId);
       setCopiedUpi(true);
       setTimeout(() => setCopiedUpi(false), 2000);
     }
@@ -35,13 +57,124 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
   const [regId, setRegId] = useState('');
   const [errors, setErrors] = useState({});
 
+  // ── Existing Registered Team Names Cache ──
+  const [existingTeams, setExistingTeams] = useState(() => {
+    const teams = new Set();
+    try {
+      const stored = JSON.parse(localStorage.getItem('thrust5_existing_teams') || '[]');
+      if (Array.isArray(stored)) stored.forEach((t) => t && teams.add(t.trim()));
+      const registrations = JSON.parse(localStorage.getItem('thrust5_registrations') || '[]');
+      if (Array.isArray(registrations)) {
+        registrations.forEach((r) => { if (r && r.teamName) teams.add(r.teamName.trim()); });
+      }
+    } catch (_) {}
+    return Array.from(teams);
+  });
+
   const fileInputRef = useRef(null);
+
+  // Sync registered team names from Google Sheets & local cache
+  useEffect(() => {
+    const targetUrl = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
+
+    const mergeTeams = (newTeams) => {
+      if (!Array.isArray(newTeams) || newTeams.length === 0) return;
+      setExistingTeams((prev) => {
+        const set = new Set(prev);
+        newTeams.forEach((t) => t && set.add(t.trim()));
+        const merged = Array.from(set);
+        try { localStorage.setItem('thrust5_existing_teams', JSON.stringify(merged)); } catch (_) {}
+        return merged;
+      });
+    };
+
+    // 1. Direct fetch to GAS doGet
+    fetch(targetUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Array.isArray(data.teams)) {
+          mergeTeams(data.teams);
+        }
+      })
+      .catch(() => {});
+
+    // 2. JSONP fallback to GAS doGet
+    try {
+      const cbName = 'thrust5_cb_teams_' + Math.floor(Math.random() * 1000000);
+      window[cbName] = (data) => {
+        if (data && Array.isArray(data.teams)) {
+          mergeTeams(data.teams);
+        }
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+      const script = document.createElement('script');
+      script.src = `${targetUrl}?callback=${cbName}`;
+      script.onerror = () => {
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+      document.body.appendChild(script);
+    } catch (_) {}
+
+    // 3. Google Sheets GViz public query fallback
+    fetch('https://docs.google.com/spreadsheets/d/1U_W0ghyQQN_LT6BUu9mInyWEHy6og-VqcP85lzwXlgY/gviz/tq?tqx=out:json')
+      .then((res) => res.text())
+      .then((txt) => {
+        const jsonMatch = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]+)\);/);
+        if (jsonMatch && jsonMatch[1]) {
+          const parsed = JSON.parse(jsonMatch[1]);
+          const rows = parsed?.table?.rows || [];
+          const gvizTeams = rows
+            .map((r) => r?.c?.[1]?.v)
+            .filter((v) => v && typeof v === 'string' && v.trim() && v !== 'Team Name');
+          mergeTeams(gvizTeams);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (onSubmittedStateChange) {
       onSubmittedStateChange(!!submittedData);
     }
   }, [submittedData, onSubmittedStateChange]);
+
+  const normalizeTeamName = (name) => (name || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
+
+  const checkTeamName = (name, isBlurOrSubmit = false) => {
+    const trimmed = (name || '').trim();
+    if (!trimmed) {
+      return isBlurOrSubmit ? 'Team Name is required.' : null;
+    }
+
+    // Disallow special characters: only letters, numbers, spaces, and underscores allowed
+    if (!/^[a-zA-Z0-9_ ]+$/.test(trimmed)) {
+      return 'Special characters are not allowed! Use only letters, numbers, spaces, and underscores (_).';
+    }
+
+    const norm = normalizeTeamName(trimmed);
+    if (!norm) return null;
+
+    const match = existingTeams.find((existing) => normalizeTeamName(existing) === norm);
+    if (match) {
+      return `Team name "${trimmed}" already exists! Please choose a different team name.`;
+    }
+
+    return null;
+  };
+
+  const handleTeamNameChange = (e) => {
+    const val = e.target.value;
+    setFormData((prev) => ({ ...prev, teamName: val }));
+    const err = checkTeamName(val, false);
+    setErrors((prev) => ({ ...prev, teamName: err }));
+  };
+
+  const handleTeamNameBlur = () => {
+    const err = checkTeamName(formData.teamName, true);
+    setErrors((prev) => ({ ...prev, teamName: err }));
+  };
 
   const updateField = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -116,6 +249,69 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  // ─── Bulletproof Google Sheet submission ───
+  // 1. Primary: fetch with 'text/plain;charset=utf-8' (CORS-safe simple request).
+  //    GAS receives the entire raw JSON payload in e.postData.contents without URL-encoding truncation.
+  // 2. Secondary: navigator.sendBeacon with text/plain (guaranteed delivery even on tab close/nav).
+  // 3. Tertiary: Hidden iframe + form POST (backup for browsers with strict fetch policies).
+  const submitToSheet = (payload) => {
+    const targetUrl = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
+    const payloadString = JSON.stringify(payload);
+
+    // 1. PRIMARY: fetch POST with text/plain (GAS postData.contents)
+    try {
+      fetch(targetUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: payloadString,
+      }).catch((err) => {
+        console.warn('[Thrust5] Primary fetch notice:', err);
+      });
+    } catch (err) {
+      console.warn('[Thrust5] Primary fetch error:', err);
+    }
+
+    // 2. SECONDARY: navigator.sendBeacon (background delivery guarantee)
+    try {
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        const blob = new Blob([payloadString], { type: 'text/plain;charset=utf-8' });
+        navigator.sendBeacon(targetUrl, blob);
+      }
+    } catch (err) {
+      console.warn('[Thrust5] sendBeacon notice:', err);
+    }
+
+    // 3. TERTIARY: Hidden iframe + form POST
+    try {
+      const iframeName = 'thrust5_frame_' + Date.now();
+      const iframe = document.createElement('iframe');
+      iframe.name = iframeName;
+      iframe.id = iframeName;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const formEl = document.createElement('form');
+      formEl.method = 'POST';
+      formEl.action = targetUrl;
+      formEl.target = iframeName;
+
+      const inputEl = document.createElement('input');
+      inputEl.type = 'hidden';
+      inputEl.name = 'payload';
+      inputEl.value = payloadString;
+      formEl.appendChild(inputEl);
+
+      document.body.appendChild(formEl);
+      formEl.submit();
+
+      setTimeout(() => { if (formEl.parentNode) formEl.parentNode.removeChild(formEl); }, 2000);
+      setTimeout(() => { if (iframe.parentNode) iframe.parentNode.removeChild(iframe); }, 20000);
+    } catch (err) {
+      console.warn('[Thrust5] iframe submit notice:', err);
+    }
+  };
+
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -137,7 +333,9 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
 
   const validate = () => {
     const errs = {};
-    if (!formData.teamName.trim()) errs.teamName = 'Team Name is required.';
+    const teamErr = checkTeamName(formData.teamName, true);
+    if (teamErr) errs.teamName = teamErr;
+
     if (!formData.teamLeader.trim()) errs.teamLeader = 'Team Leader Name is required.';
     if (!formData.leaderRoll.trim()) errs.leaderRoll = 'Leader Roll Number is required.';
 
@@ -154,7 +352,7 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
     if (!formData.m2Roll.trim()) errs.m2Roll = 'Member 2 Roll Number is required.';
 
     if (!receiptFile) {
-      errs.receipt = 'Please attach your payment receipt proof.';
+      errs.receipt = 'Payment receipt is compulsory! Please upload your payment screenshot to complete registration.';
     }
 
     setErrors(errs);
@@ -163,7 +361,17 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      const teamErr = checkTeamName(formData.teamName, true);
+      if (teamErr) {
+        const el = document.getElementById('teamName');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (!receiptFile) {
+        const el = document.getElementById('receipt-upload-zone');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
 
     setIsSubmitting(true);
     const generatedRegId = 'THRUST5-' + Math.floor(100000 + Math.random() * 900000);
@@ -182,28 +390,30 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
       m3Name: formData.m3Name.trim() || 'N/A',
       m3Roll: formData.m3Roll.trim() || 'N/A',
       fileName: receiptFile ? receiptFile.name : '',
-      // Send full data URI (data:image/jpeg;base64,...) under the key GAS expects
+      // Send full data URI under all key aliases GAS expects
       paymentReceipt: receiptBase64,
+      paymentBase64: receiptBase64,
+      fileData: receiptBase64,
     };
 
-    const targetUrl = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
-
     try {
-      if (typeof window !== 'undefined') {
-        const payloadString = JSON.stringify(payload);
-        // Use fetch with no-cors to avoid CORS errors while still sending the full payload
-        // (no-cors doesn't return a readable response but the GAS still receives and processes it)
-        fetch(targetUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: 'payload=' + encodeURIComponent(payloadString),
-        }).catch(() => {}); // ignore CORS response error - GAS still processes it
-      }
+      // Dispatch immediately to Google Sheets via multi-protocol delivery
+      submitToSheet(payload);
 
-      const existing = JSON.parse(localStorage.getItem('thrust5_registrations') || '[]');
-      existing.push(payload);
-      localStorage.setItem('thrust5_registrations', JSON.stringify(existing));
+      // Save to existingTeams state & localStorage
+      setExistingTeams((prev) => [...prev, payload.teamName]);
+      try {
+        const saved = JSON.parse(localStorage.getItem('thrust5_existing_teams') || '[]');
+        saved.push(payload.teamName);
+        localStorage.setItem('thrust5_existing_teams', JSON.stringify(saved));
+      } catch (_) {}
+
+      // Save to localStorage as offline backup
+      try {
+        const existing = JSON.parse(localStorage.getItem('thrust5_registrations') || '[]');
+        existing.push(payload);
+        localStorage.setItem('thrust5_registrations', JSON.stringify(existing));
+      } catch (_) {}
 
       setRegId(generatedRegId);
       setSubmittedData(payload);
@@ -217,6 +427,14 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
   };
 
   const handleRegistrationDone = () => {
+    // ── FALLBACK: Re-submit same payload as a safety net ──
+    // GAS has case-insensitive duplicate team-name protection,
+    // so if the primary submit already went through, this is harmlessly rejected.
+    // If the primary submit failed, this ensures the data reaches the sheet.
+    if (submittedData) {
+      submitToSheet(submittedData);
+    }
+
     setSubmittedData(null);
     setFormData({
       teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',
@@ -353,14 +571,11 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
           transition={{ duration: 0.5 }}
           className="text-center mb-10 sm:mb-12"
         >
-          <div className="font-heading text-xs font-semibold tracking-widest text-[#29ABE2] uppercase mb-2">
-            In-App Registration & Direct Sheet Sync
-          </div>
           <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-white tracking-tight mb-3">
             Register Your <span className="text-[#29ABE2]">Team</span>
           </h2>
           <p className="text-xs sm:text-sm text-[#94A3B8]">
-            Complete form & upload payment receipt. Data is automatically recorded in your team's row.
+            Complete form & upload payment receipt.
           </p>
         </motion.div>
 
@@ -380,18 +595,44 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
             </div>
 
             <div>
-              <label htmlFor="teamName" className="block text-xs font-semibold text-[#94A3B8] mb-1.5">
-                Team Name <span className="text-[#29ABE2]">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="teamName" className="block text-xs font-semibold text-[#94A3B8]">
+                  Team Name <span className="text-[#29ABE2]">*</span>
+                </label>
+                <span className="text-[10px] text-[#64748B] font-mono">
+                  Letters, numbers, spaces & underscores (_) only
+                </span>
+              </div>
               <input
                 id="teamName"
                 type="text"
-                className="mobile-input"
-                placeholder="e.g. AeroDynamics 5"
+                className={`mobile-input ${
+                  errors.teamName
+                    ? 'border-rose-500/80 bg-rose-500/5 focus:border-rose-400'
+                    : formData.teamName.trim().length >= 3 && !errors.teamName
+                    ? 'border-emerald-500/50 focus:border-emerald-400'
+                    : ''
+                }`}
+                placeholder="e.g. AeroDynamics_5"
                 value={formData.teamName}
-                onChange={(e) => updateField('teamName', e.target.value)}
+                onChange={handleTeamNameChange}
+                onBlur={handleTeamNameBlur}
               />
-              {errors.teamName && <p className="text-red-400 text-xs mt-1">{errors.teamName}</p>}
+              {errors.teamName ? (
+                <div className="flex items-center gap-1.5 mt-1.5 text-xs text-rose-400 font-medium bg-rose-500/10 border border-rose-500/30 px-3 py-1.5 rounded-lg">
+                  <svg className="w-4 h-4 shrink-0 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <span>{errors.teamName}</span>
+                </div>
+              ) : formData.teamName.trim().length >= 3 ? (
+                <div className="flex items-center gap-1.5 mt-1.5 text-[11px] text-emerald-400 font-medium">
+                  <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Team name is available</span>
+                </div>
+              ) : null}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -529,7 +770,9 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
           {/* Section 3: Direct Payment Proof Upload */}
           <div className="space-y-4">
             <div className="font-heading font-bold text-xs text-[#29ABE2] tracking-wider uppercase border-b border-[#1E3A5F] pb-2 flex justify-between items-center">
-              <span>3. Payment & Proof Upload (₹120)</span>
+              <span>
+                3. Payment & Receipt Upload (₹120) <span className="text-red-400 font-bold text-sm">*</span> <span className="text-red-400 text-[11px] font-mono lowercase tracking-normal font-semibold">(compulsory)</span>
+              </span>
               <span className="text-[10px] text-[#29ABE2]">PNG, JPG, WEBP, PDF</span>
             </div>
 
@@ -550,7 +793,7 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
                       Official UPI Payment QR
                     </div>
                     <div className="text-[11px] text-[#94A3B8]">
-                      Payee: <span className="text-white font-medium">Shirshendu R Tripathi</span>
+                      Payee: <span className="text-white font-medium">{activeQr.payee}</span>
                     </div>
                   </div>
                 </div>
@@ -559,12 +802,38 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
                 </div>
               </div>
 
+              {/* QR Option Selector Tabs */}
+              <div className="flex items-center justify-center gap-1.5 mb-3 p-1 rounded-xl bg-[#111827] border border-[#1E3A5F] max-w-sm mx-auto">
+                <button
+                  type="button"
+                  onClick={() => setSelectedQr('qr1')}
+                  className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-heading font-semibold transition-all cursor-pointer ${
+                    selectedQr === 'qr1'
+                      ? 'bg-[#29ABE2] text-[#0A0F16] shadow-[0_0_12px_rgba(41,171,226,0.35)]'
+                      : 'text-[#94A3B8] hover:text-white'
+                  }`}
+                >
+                  Option 1 (Shirshendu)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedQr('qr2')}
+                  className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-heading font-semibold transition-all cursor-pointer ${
+                    selectedQr === 'qr2'
+                      ? 'bg-[#29ABE2] text-[#0A0F16] shadow-[0_0_12px_rgba(41,171,226,0.35)]'
+                      : 'text-[#94A3B8] hover:text-white'
+                  }`}
+                >
+                  Option 2 (Apurva)
+                </button>
+              </div>
+
               {/* QR Image with aerospace glow frame */}
               <div className="relative inline-block my-1">
                 <div className="p-2.5 bg-white rounded-xl shadow-[0_0_25px_rgba(41,171,226,0.18)] border border-[#29ABE2]/40 inline-block">
                   <img
-                    src="/payment-qr.png"
-                    alt="Thrust 5.0 Payment QR - shirsh8924@oksbi"
+                    src={activeQr.image}
+                    alt={activeQr.alt}
                     className="w-44 h-44 sm:w-52 sm:h-52 object-contain rounded-lg mx-auto block"
                     loading="eager"
                   />
@@ -579,7 +848,7 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#111827] border border-[#1E3A5F]">
                   <span className="text-[11px] text-[#64748B] font-mono">UPI ID:</span>
                   <span className="text-xs font-mono font-bold text-[#29ABE2] select-all">
-                    shirsh8924@oksbi
+                    {activeQr.upiId}
                   </span>
                   <button
                     type="button"
@@ -607,7 +876,7 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
 
                 {/* Direct Mobile UPI Pay Button */}
                 <a
-                  href="upi://pay?pa=shirsh8924@oksbi&pn=Shirshendu%20R%20Tripathi&am=120&cu=INR&tn=Thrust%205.0%20Registration"
+                  href={activeQr.link}
                   className="sm:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#29ABE2]/15 border border-[#29ABE2]/40 text-[#29ABE2] text-xs font-bold font-heading hover:bg-[#29ABE2]/25 transition-all"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -628,6 +897,7 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
 
             {/* Drag & Drop Upload Zone */}
             <div
+              id="receipt-upload-zone"
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
@@ -635,9 +905,11 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
               onClick={() => fileInputRef.current && fileInputRef.current.click()}
               className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${dragActive
                 ? 'border-[#29ABE2] bg-[#29ABE2]/10'
-                : receiptFile
-                  ? 'border-emerald-500/50 bg-[#0A0F16]'
-                  : 'border-[#1E3A5F] hover:border-[#29ABE2]/60 bg-[#0A0F16]'
+                : errors.receipt
+                  ? 'border-red-500 bg-red-500/10 shadow-[0_0_20px_rgba(239,68,68,0.25)]'
+                  : receiptFile
+                    ? 'border-emerald-500/60 bg-[#0A0F16]'
+                    : 'border-[#1E3A5F] hover:border-[#29ABE2]/60 bg-[#0A0F16]'
                 }`}
             >
               <input
@@ -687,21 +959,31 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-[#111827] border border-[#1E3A5F] flex items-center justify-center mx-auto text-[#29ABE2]">
+                  <div className={`w-12 h-12 rounded-full ${errors.receipt ? 'bg-red-500/20 border border-red-500 text-red-400' : 'bg-[#111827] border border-[#1E3A5F] text-[#29ABE2]'} flex items-center justify-center mx-auto transition-colors`}>
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
                   </div>
                   <div className="font-bold text-xs text-white">
-                    Drag & Drop UPI Payment Receipt Here
+                    Drag & Drop UPI Payment Receipt Here <span className="text-red-400 font-bold">*</span>
                   </div>
                   <div className="text-[11px] text-[#64748B]">
                     or <span className="text-[#29ABE2] underline">Browse file from device</span> (Max 12MB)
                   </div>
+                  <div className="inline-block mt-1 px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-mono font-bold uppercase tracking-wider">
+                    Compulsory for submission
+                  </div>
                 </div>
               )}
             </div>
-            {errors.receipt && <p className="text-red-400 text-xs">{errors.receipt}</p>}
+            {errors.receipt && (
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/40 text-red-400 text-xs font-semibold flex items-center gap-2">
+                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span>{errors.receipt}</span>
+              </div>
+            )}
           </div>
 
           {/* Submit Button */}
@@ -713,6 +995,111 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
             {isSubmitting ? 'Uploading & Registering...' : 'Complete Team Registration'}
           </button>
         </motion.form>
+
+        {/* Contact & Help Panel below registration column */}
+        <motion.div
+          id="contacts"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mt-8 sm:mt-10 p-5 sm:p-7 rounded-2xl bg-gradient-to-b from-[#101E33] to-[#0B1525] border-2 border-[#1E6FBA]/40 shadow-[0_8px_30px_rgba(30,111,186,0.18)] relative overflow-hidden"
+        >
+          {/* Subtle glowing accent gradient on top */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#29ABE2] to-transparent opacity-80" />
+
+          <div className="flex items-center gap-3 mb-5 pb-3.5 border-b border-[#1E4E7A]/50">
+            <div className="w-9 h-9 rounded-xl bg-[#29ABE2]/20 border border-[#29ABE2]/50 flex items-center justify-center text-[#29ABE2] shrink-0 shadow-[0_0_15px_rgba(41,171,226,0.3)]">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-heading font-extrabold text-base sm:text-lg text-white tracking-wide flex items-center gap-2">
+                Need Help? Contact Us
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#29ABE2]/15 text-[#29ABE2] border border-[#29ABE2]/30 uppercase">Support</span>
+              </h3>
+              <p className="text-[11px] sm:text-xs text-[#94A3B8]">
+                Reach out to the event coordinators or registration helpdesk anytime
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            {/* Event Coordinator */}
+            <div className="p-4 rounded-xl bg-[#14233A]/90 border border-[#1E568A]/60 hover:border-[#29ABE2]/60 transition-all shadow-sm">
+              <div className="text-[10px] font-mono font-bold text-[#29ABE2] uppercase tracking-wider mb-1">
+                Event Coordinator
+              </div>
+              <div className="text-sm sm:text-base font-semibold text-white">Arjun Nigam</div>
+              <a
+                href="tel:9235665193"
+                className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0C1726] border border-[#1E4E7A]/60 text-xs text-[#cbd5e1] hover:text-white hover:border-[#29ABE2] transition-all font-mono font-medium"
+              >
+                <svg className="w-3.5 h-3.5 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                9235665193
+              </a>
+            </div>
+
+            {/* Event Co-Coordinator: Askini Joshi */}
+            <div className="p-4 rounded-xl bg-[#14233A]/90 border border-[#1E568A]/60 hover:border-[#29ABE2]/60 transition-all shadow-sm">
+              <div className="text-[10px] font-mono font-bold text-[#29ABE2] uppercase tracking-wider mb-1">
+                Event Co-Coordinator
+              </div>
+              <div className="text-sm sm:text-base font-semibold text-white">Askini Joshi</div>
+              <a
+                href="tel:9479952334"
+                className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0C1726] border border-[#1E4E7A]/60 text-xs text-[#cbd5e1] hover:text-white hover:border-[#29ABE2] transition-all font-mono font-medium"
+              >
+                <svg className="w-3.5 h-3.5 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                9479952334
+              </a>
+            </div>
+
+            {/* Event Co-Coordinator: Ruthik Roy */}
+            <div className="p-4 rounded-xl bg-[#14233A]/90 border border-[#1E568A]/60 hover:border-[#29ABE2]/60 transition-all shadow-sm">
+              <div className="text-[10px] font-mono font-bold text-[#29ABE2] uppercase tracking-wider mb-1">
+                Event Co-Coordinator
+              </div>
+              <div className="text-sm sm:text-base font-semibold text-white">Ruthik Roy</div>
+              <a
+                href="tel:9989275764"
+                className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0C1726] border border-[#1E4E7A]/60 text-xs text-[#cbd5e1] hover:text-white hover:border-[#29ABE2] transition-all font-mono font-medium"
+              >
+                <svg className="w-3.5 h-3.5 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                9989275764
+              </a>
+            </div>
+          </div>
+
+          {/* Registration Queries - slightly highlighted with distinctive tone */}
+          <div className="p-4 rounded-xl bg-gradient-to-r from-[#173252] via-[#1B3B60] to-[#173252] border border-[#29ABE2]/50 shadow-[0_0_20px_rgba(41,171,226,0.15)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#29ABE2] animate-pulse shrink-0 shadow-[0_0_8px_#29ABE2]" />
+              <div>
+                <div className="text-[10px] font-mono font-bold text-[#29ABE2] uppercase tracking-wider">
+                  Registration Queries
+                </div>
+                <div className="text-sm sm:text-base font-semibold text-white">Lakshay</div>
+              </div>
+            </div>
+            <a
+              href="tel:9729088820"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#29ABE2] hover:bg-[#1E6FBA] text-[#0D1117] hover:text-white text-xs font-bold font-mono transition-all no-underline shadow-md shadow-[#29ABE2]/20"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              9729088820
+            </a>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

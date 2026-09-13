@@ -83,11 +83,31 @@ function doPost(e) {
     ensureHeaders(sheet);
 
     var data = {};
-    if (e && e.parameter && e.parameter.payload) {
-      try { data = JSON.parse(e.parameter.payload); } catch (err) { data = e.parameter; }
-    } else if (e && e.postData && e.postData.contents) {
-      try { data = JSON.parse(e.postData.contents); } catch (err) { data = e.parameter || {}; }
-    } else if (e && e.parameter) {
+    // 1. Raw JSON in postData.contents (sent via text/plain fetch or sendBeacon)
+    if (e && e.postData && e.postData.contents) {
+      try {
+        data = JSON.parse(e.postData.contents);
+      } catch (err) {
+        // In case postData was urlencoded (payload=...)
+        try {
+          var contents = e.postData.contents;
+          if (contents.indexOf('payload=') === 0) {
+            var decoded = decodeURIComponent(contents.substring(8).replace(/\+/g, ' '));
+            data = JSON.parse(decoded);
+          }
+        } catch (err2) {}
+      }
+    }
+    // 2. URL-encoded form parameter (sent via hidden iframe form POST)
+    if ((!data || !data.teamName) && e && e.parameter && e.parameter.payload) {
+      try {
+        data = JSON.parse(e.parameter.payload);
+      } catch (err) {
+        data = e.parameter;
+      }
+    }
+    // 3. Fallback direct parameter
+    if ((!data || !data.teamName) && e && e.parameter) {
       data = e.parameter;
     }
 
@@ -98,8 +118,19 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // Duplicate check (case-insensitive)
+    // Disallow special characters: only letters, numbers, spaces, and underscores allowed
+    if (!/^[a-zA-Z0-9_ ]+$/.test(teamName)) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          result: 'error',
+          error: 'Special characters are not allowed in team name! Use only letters, numbers, spaces, and underscores (_).'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Duplicate check: tag resubmissions so no registration or test is ever lost
     var lastRow = sheet.getLastRow();
+    var isDuplicate = false;
     if (lastRow > 1) {
       var existingTeams = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
       var normalizedNew = teamName.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -107,14 +138,14 @@ function doPost(e) {
         var existing = (existingTeams[i][0] || '').toString().trim();
         var normalizedExisting = existing.toLowerCase().replace(/[^a-z0-9]/g, '');
         if (normalizedExisting && normalizedExisting === normalizedNew) {
-          return ContentService
-            .createTextOutput(JSON.stringify({
-              result: 'duplicate',
-              error: 'Team "' + teamName + '" is already registered! Choose a unique team name.'
-            }))
-            .setMimeType(ContentService.MimeType.JSON);
+          isDuplicate = true;
+          break;
         }
       }
+    }
+
+    if (isDuplicate) {
+      teamName = teamName + ' [RESUBMISSION]';
     }
 
     var timestamp   = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
@@ -233,12 +264,47 @@ function repairSheetHeaders() {
 }
 
 function doGet(e) {
-  return ContentService
-    .createTextOutput(JSON.stringify({
+  try {
+    var sheet = getTargetSheet();
+    var teams = [];
+    var lastRow = sheet.getLastRow();
+    if (lastRow > 1) {
+      var rawTeams = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+      for (var i = 0; i < rawTeams.length; i++) {
+        var t = (rawTeams[i][0] || '').toString().trim();
+        if (t) {
+          // Clean out resubmission tags
+          t = t.replace(/\s*\[RESUBMISSION\]\s*/gi, '').trim();
+          if (t && teams.indexOf(t) === -1) {
+            teams.push(t);
+          }
+        }
+      }
+    }
+
+    var responseData = {
       status: 'active',
       spreadsheetId: SPREADSHEET_ID,
       columns: COL_COUNT,
+      teams: teams,
       message: 'Thrust 5.0 Registration API Live'
-    }))
-    .setMimeType(ContentService.MimeType.JSON);
+    };
+
+    var jsonString = JSON.stringify(responseData);
+
+    if (e && e.parameter && e.parameter.callback) {
+      return ContentService
+        .createTextOutput(e.parameter.callback + '(' + jsonString + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+
+    return ContentService
+      .createTextOutput(jsonString)
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'error', error: err.toString(), teams: [] }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
+

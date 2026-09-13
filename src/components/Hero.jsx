@@ -121,7 +121,7 @@ export default function Hero() {
           </div>
           <div className="p-3.5 rounded-xl bg-[#111827]/70 border border-[#1E3A5F] backdrop-blur-sm">
             <div className="text-[10px] sm:text-xs text-[#29ABE2] font-mono font-bold uppercase tracking-wider">Team Size</div>
-            <div className="text-xs sm:text-sm font-semibold text-white mt-1">2 to 4 Members</div>
+            <div className="text-xs sm:text-sm font-semibold text-white mt-1">2 to 3 Members</div>
           </div>
           <div className="p-3.5 rounded-xl bg-[#111827]/70 border border-[#1E3A5F] backdrop-blur-sm">
             <div className="text-[10px] sm:text-xs text-[#29ABE2] font-mono font-bold uppercase tracking-wider">Registration Fee</div>

@@ -15,7 +15,7 @@ export default function EventDetails() {
     },
     {
       label: 'Time',
-      value: '09:00 AM',
+      value: '08:00 AM',
       desc: 'Onwards',
       icon: (
         <svg className="w-6 h-6 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,20 +24,9 @@ export default function EventDetails() {
       )
     },
     {
-      label: 'Venue',
-      value: 'Cricket Ground',
-      desc: 'IIITDMJ Campus',
-      icon: (
-        <svg className="w-6 h-6 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      )
-    },
-    {
       label: 'Entry Fee',
       value: '₹120',
-      desc: 'Per team total (2-4 members)',
+      desc: 'Per team total (2-3 members)',
       icon: (
         <svg className="w-6 h-6 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -60,7 +49,7 @@ export default function EventDetails() {
     {
       title: 'Maximum Range',
       badge: 'Distance',
-      desc: 'Total downrange horizontal distance achieved across the Cricket Ground from the launch pad to the landing zone.',
+      desc: 'Total downrange horizontal distance achieved from the launch pad to the landing zone.',
       icon: (
         <svg className="w-5 h-5 text-[#29ABE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -108,12 +97,12 @@ export default function EventDetails() {
             Engineer. Build. <span className="text-[#29ABE2]">Launch.</span>
           </h2>
           <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed">
-            Thrust 5.0 is the flagship hands-on engineering competition for first-years at IIITDMJ. Compete on the Cricket Ground for maximum time of flight, downrange distance, and engineering design.
+            Thrust 5.0 is the flagship hands-on engineering competition for first-years at IIITDMJ. Compete for maximum time of flight, downrange distance, and engineering design.
           </p>
         </motion.div>
 
         {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           {cards.map((card, i) => (
             <motion.div
               key={card.label}
@@ -189,60 +178,51 @@ export default function EventDetails() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="cyber-card p-6 sm:p-8 border border-[#1E3A5F] relative overflow-hidden"
+          className="cyber-card p-5 sm:p-8 border border-[#1E3A5F] relative overflow-hidden"
         >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#1E3A5F]/60 pb-4 mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#29ABE2]/10 border border-[#29ABE2]/40 flex items-center justify-center text-[#29ABE2] shrink-0">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">Official Rulebook</h3>
-                <p className="text-xs text-[#94A3B8]">Technical specifications, dimension limits & launch protocols</p>
-              </div>
+          <div className="flex items-center gap-3 border-b border-[#1E3A5F]/60 pb-4 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-[#29ABE2]/10 border border-[#29ABE2]/40 flex items-center justify-center text-[#29ABE2] shrink-0">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
             </div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold uppercase tracking-wider shrink-0">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-              To Be Released Soon
+            <div>
+              <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">Official Rulebook</h3>
+              <p className="text-xs text-[#94A3B8]">Key rules & specifications — download the PDF for complete details</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs text-[#94A3B8] mb-6">
-            <div className="p-4 rounded-xl bg-[#0A0F16] border border-[#1E3A5F]/70">
-              <div className="font-heading font-bold text-white text-xs mb-1.5 flex items-center gap-1.5 text-[#29ABE2]">
-                <span>⚙️</span> Launcher Specifications
+          {/* Quick Highlights */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-5">
+            {[
+              { icon: '👥', label: 'Team Size', val: '2–3 Members' },
+              { icon: '🚫', label: 'Prohibited', val: 'Electronics, Metal, Glass' },
+              { icon: '💧', label: 'Propellant', val: 'Water + Air Only' },
+              { icon: '🔧', label: 'Launcher', val: 'Own Launcher Required' },
+            ].map(h => (
+              <div key={h.label} className="p-3 sm:p-3.5 rounded-xl bg-[#0A0F16] border border-[#1E3A5F]/60 text-center">
+                <div className="text-lg sm:text-xl mb-1">{h.icon}</div>
+                <div className="text-[10px] font-mono font-bold text-[#29ABE2] uppercase tracking-wider">{h.label}</div>
+                <div className="text-[11px] sm:text-xs text-[#94A3B8] font-medium mt-0.5 leading-tight">{h.val}</div>
               </div>
-              <p className="text-[11px] text-[#94A3B8] leading-relaxed">
-                Custom-fabricated launch platforms permitted. Must support secure angle calibration and remote pull-cord release.
-              </p>
-            </div>
-            <div className="p-4 rounded-xl bg-[#0A0F16] border border-[#1E3A5F]/70">
-              <div className="font-heading font-bold text-white text-xs mb-1.5 flex items-center gap-1.5 text-[#29ABE2]">
-                <span>🚀</span> Rocket Dimensions & Materials
-              </div>
-              <p className="text-[11px] text-[#94A3B8] leading-relaxed">
-                Built strictly using standard PET beverage bottles. Metal, glass, and sharp hazardous nose ballasts are prohibited.
-              </p>
-            </div>
-            <div className="p-4 rounded-xl bg-[#0A0F16] border border-[#1E3A5F]/70">
-              <div className="font-heading font-bold text-white text-xs mb-1.5 flex items-center gap-1.5 text-[#29ABE2]">
-                <span>🛡️</span> Pressure & Safety Limits
-              </div>
-              <p className="text-[11px] text-[#94A3B8] leading-relaxed">
-                Water and compressed air only. Operating pressure limits and field inspection guidelines will be specified in the rulebook.
-              </p>
-            </div>
+            ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-xl bg-[#111827] border border-[#1E3A5F]">
-            <div className="text-xs text-slate-300">
-              📢 The official PDF rulebook with launch slot timings and scoring formulas will be published here & shared on the WhatsApp group prior to the event.
-            </div>
-            <button disabled className="btn-launch opacity-50 cursor-not-allowed px-5 py-2.5 text-xs tracking-wider shrink-0">
-              Rulebook Coming Soon
-            </button>
+          {/* Single Download bar */}
+          <div className="p-3.5 sm:p-4 rounded-xl bg-[#111827] border border-[#1E3A5F] flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-[11px] sm:text-xs text-slate-300 text-center sm:text-left">
+              📢 Detailed rules, launch protocols, scoring formulas, and event guidelines are in the official PDF rulebook.
+            </p>
+            <a
+              href="/Thrust_5_0_RB.pdf"
+              download="Thrust_5_0_Rulebook.pdf"
+              className="btn-launch px-4 sm:px-5 py-2 sm:py-2.5 text-[11px] sm:text-xs tracking-wider shrink-0 no-underline inline-flex items-center gap-2"
+            >
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download Full Rulebook PDF
+            </a>
           </div>
         </motion.div>
       </div>
