@@ -645,7 +645,7 @@
           const payloadStr = JSON.stringify(data);
           const targetUrl = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
           
-          // 1. PRIMARY: fetch POST with text/plain (CORS-safe simple request, raw JSON in postData.contents)
+          // Single Clean Google Sheet Submission via fetch with text/plain
           try {
             fetch(targetUrl, {
               method: 'POST',
@@ -653,38 +653,6 @@
               headers: { 'Content-Type': 'text/plain;charset=utf-8' },
               body: payloadStr,
             }).catch(() => {});
-          } catch (_) {}
-
-          // 2. SECONDARY: sendBeacon
-          try {
-            if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-              const blob = new Blob([payloadStr], { type: 'text/plain;charset=utf-8' });
-              navigator.sendBeacon(targetUrl, blob);
-            }
-          } catch (_) {}
-
-          // 3. TERTIARY: Hidden iframe + form POST
-          try {
-            const iframeName = 'thrust5_iframe_' + Date.now();
-            const iframe = document.createElement('iframe');
-            iframe.name = iframeName;
-            iframe.id = iframeName;
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-
-            const formEl = document.createElement('form');
-            formEl.method = 'POST';
-            formEl.action = targetUrl;
-            formEl.target = iframeName;
-            const inputEl = document.createElement('input');
-            inputEl.type = 'hidden';
-            inputEl.name = 'payload';
-            inputEl.value = payloadStr;
-            formEl.appendChild(inputEl);
-            document.body.appendChild(formEl);
-            formEl.submit();
-            setTimeout(() => { if (formEl.parentNode) formEl.parentNode.removeChild(formEl); }, 2000);
-            setTimeout(() => { if (iframe.parentNode) iframe.parentNode.removeChild(iframe); }, 20000);
           } catch (_) {}
 
           // Save to local team set

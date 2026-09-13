@@ -249,16 +249,13 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // ─── Bulletproof Google Sheet submission ───
-  // 1. Primary: fetch with 'text/plain;charset=utf-8' (CORS-safe simple request).
-  //    GAS receives the entire raw JSON payload in e.postData.contents without URL-encoding truncation.
-  // 2. Secondary: navigator.sendBeacon with text/plain (guaranteed delivery even on tab close/nav).
-  // 3. Tertiary: Hidden iframe + form POST (backup for browsers with strict fetch policies).
+  // ─── Single Clean Google Sheet Submission ───
+  // Uses fetch with 'text/plain;charset=utf-8' (CORS-safe simple request).
+  // GAS receives the full JSON payload in e.postData.contents reliably without URL truncation.
   const submitToSheet = (payload) => {
     const targetUrl = 'https://script.google.com/macros/s/AKfycbzbRFibdQV3w_UBY_iNif-qMuTWcMEtPahh56swLO2HVvGIa-2WAqhp38o70jzllYTD/exec';
     const payloadString = JSON.stringify(payload);
 
-    // 1. PRIMARY: fetch POST with text/plain (GAS postData.contents)
     try {
       fetch(targetUrl, {
         method: 'POST',
@@ -266,49 +263,10 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: payloadString,
       }).catch((err) => {
-        console.warn('[Thrust5] Primary fetch notice:', err);
+        console.warn('[Thrust5] Sheet submission notice:', err);
       });
     } catch (err) {
-      console.warn('[Thrust5] Primary fetch error:', err);
-    }
-
-    // 2. SECONDARY: navigator.sendBeacon (background delivery guarantee)
-    try {
-      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-        const blob = new Blob([payloadString], { type: 'text/plain;charset=utf-8' });
-        navigator.sendBeacon(targetUrl, blob);
-      }
-    } catch (err) {
-      console.warn('[Thrust5] sendBeacon notice:', err);
-    }
-
-    // 3. TERTIARY: Hidden iframe + form POST
-    try {
-      const iframeName = 'thrust5_frame_' + Date.now();
-      const iframe = document.createElement('iframe');
-      iframe.name = iframeName;
-      iframe.id = iframeName;
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-
-      const formEl = document.createElement('form');
-      formEl.method = 'POST';
-      formEl.action = targetUrl;
-      formEl.target = iframeName;
-
-      const inputEl = document.createElement('input');
-      inputEl.type = 'hidden';
-      inputEl.name = 'payload';
-      inputEl.value = payloadString;
-      formEl.appendChild(inputEl);
-
-      document.body.appendChild(formEl);
-      formEl.submit();
-
-      setTimeout(() => { if (formEl.parentNode) formEl.parentNode.removeChild(formEl); }, 2000);
-      setTimeout(() => { if (iframe.parentNode) iframe.parentNode.removeChild(iframe); }, 20000);
-    } catch (err) {
-      console.warn('[Thrust5] iframe submit notice:', err);
+      console.warn('[Thrust5] Sheet submission error:', err);
     }
   };
 
@@ -427,14 +385,6 @@ export default function RegistrationForm({ onSubmittedStateChange }) {
   };
 
   const handleRegistrationDone = () => {
-    // ── FALLBACK: Re-submit same payload as a safety net ──
-    // GAS has case-insensitive duplicate team-name protection,
-    // so if the primary submit already went through, this is harmlessly rejected.
-    // If the primary submit failed, this ensures the data reaches the sheet.
-    if (submittedData) {
-      submitToSheet(submittedData);
-    }
-
     setSubmittedData(null);
     setFormData({
       teamName: '', teamLeader: '', leaderRoll: '', leaderPhone: '',

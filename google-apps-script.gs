@@ -128,7 +128,7 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // Duplicate check: tag resubmissions so no registration or test is ever lost
+    // Duplicate check: reject duplicate registrations to prevent double-entry
     var lastRow = sheet.getLastRow();
     var isDuplicate = false;
     if (lastRow > 1) {
@@ -145,7 +145,12 @@ function doPost(e) {
     }
 
     if (isDuplicate) {
-      teamName = teamName + ' [RESUBMISSION]';
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          result: 'duplicate',
+          error: 'Team name "' + teamName + '" is already registered! Please choose a different team name.'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
     var timestamp   = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
